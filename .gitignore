@@ -1,0 +1,18 @@
+# Virtual environment
+venv/
+env/
+
+# Spyder project files
+.spyproject/
+*.spydata
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# Temporary files
+*.tmp
+
+# Output results
+*.csv
+*.png
