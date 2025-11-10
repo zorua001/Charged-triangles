@@ -45,7 +45,6 @@ def homogeneous (triange,point):
     c = np.dot(n, np.transpose(np.cross(triange[0]-triange[2],triange[2]-point)))/(alpha**2)
     d = q/(alpha**2)
     e = abs(np.dot(n,np.transpose(triange[2]-point)))/alpha
-    print(area(triange))
     c_prim = c ##Ingen aning vad c_prim är
     return (2*area(triange)/alpha)*(stora_j(a, a_prim, b, b_prim, c, c_prim, d, e, 1)-stora_j(a, a_prim, b, b_prim, c, c_prim, d, e, 0))
 
