@@ -9,9 +9,10 @@ import open3d as o3d
 import numpy as np
 import Homogeneous as hct
 
-mesh = o3d.t.geometry.TriangleMesh.create_cylinder(1,1,45,8)
+##Kanske ändra till o3d.t 
+mesh = o3d.geometry.TriangleMesh.create_cylinder(1,1,45,8)
 mesh.compute_vertex_normals()
-print(np.asarray(mesh.compute_triangle_normals[1]))
+print(np.asarray(mesh.triangle_normals[1]))
 
 
 vertice = np.asarray(mesh.vertices)
