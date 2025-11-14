@@ -52,5 +52,5 @@ def homogeneous (triange,point):
 n = homogeneous(np.array([[1,0,0],[0.5,0.867,0],[0,0,0]]), np.array([0.5,0.289,0.5]))
 m = homogeneous(np.array([[0,0,0],[1,0,0], [0.25,1,0]]), np.array([2,0,2]))
 
-print(n)
+#print(n)
 #print(m)

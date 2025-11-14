@@ -9,8 +9,8 @@ import open3d as o3d
 import numpy as np
 import Homogeneous as hct
 
-##Kanske ändra till o3d.t 
-mesh = o3d.geometry.TriangleMesh.create_cylinder(1,1,45,8)
+##Kanske ändra til 
+mesh = o3d.geometry.TriangleMesh.create_cylinder(1,1,10,8)
 mesh.compute_vertex_normals()
 print(np.asarray(mesh.triangle_normals[1]))
 
@@ -29,11 +29,13 @@ for j in range (len(centroid)):
     for i in range (len(triangle)):
         h = np.asarray([vertice[int(triangle[i][0])],vertice[int(triangle[i][1])],vertice[int(triangle[i][2])]])
         k = k + hct.homogeneous(h,centroid[j])
-    färg = np.append(färg,[k,0,1-k])
+    färg = np.append(färg,k)
 färg = np.delete(färg,0)
 färg = färg/max(färg)
-färg = färg.reshape(len(centroid), 3)
-print (färg)
-#mesh.vertex_colors = o3d.utility.Vector3dVector(färg)
+färg_2 = np.asarray([[i,1-i,0] for i in färg])
+färg_2 = färg_2.reshape(len(centroid), 3)
+print (färg_2)
+#mesh.paint_uniform_color([1,0,0])
+mesh.vertex_colors = o3d.utility.Vector3dVector(färg_2)
 o3d.visualization.draw_geometries([mesh])
 print(k)
