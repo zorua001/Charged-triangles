@@ -34,7 +34,7 @@ def point_ch(centroid):
     return färg    
     
 ##Kanske ändra till o3d.t 
-mesh = o3d.t.geometry.TriangleMesh.create_cylinder(1,3,40,80)
+mesh = o3d.t.geometry.TriangleMesh.create_cylinder(1,3,10,10)
 #print(mesh.vertex["positions"].numpy())
 
 
