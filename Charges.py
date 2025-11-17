@@ -8,6 +8,7 @@ Created on Wed Nov  5 13:35:25 2025
 import numpy as np
 
 def charge(charge_coordinates,points,potentia):
+    print("hello")
     distance = np.array
     for i in range(len(points)):
         for j in range(len(points)):
@@ -18,7 +19,8 @@ def charge(charge_coordinates,points,potentia):
     distance = np.delete(distance, 0)
     distance = distance.reshape(len(points), len(points))
     potentia = np.ones(len(points))*potentia
-    return np.dot(np.transpose(distance),potentia)
+    print("hej")
+    return np.linalg.lstsq(distance.astype('float') , potentia.astype('float'),rcond=-1)[0]
 
 charge_coordinates = [[1,5,7],[3,6,0],[2,3,2],[4,5,4]]
 points = [[4,2,5],[8,4,2],[7,1,2],[3,3,3]]

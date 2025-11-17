@@ -12,7 +12,11 @@ def stora_p (a,b,c,d,e,n):
 
 def stora_q (a,b,c,d,e,n):
     t = d*e*((a*d-b*c)*(c+d*n)-b*e**2)
-    number = np.arccos((abs(e*d)*np.sqrt((a+b*n)**2+(c+d*n)**2+e**2))/np.sqrt(((c+d*n)**2+e**2)*((a*d-b*c)**2+e**2*(b**2+d**2))))
+    x =(abs(e*d)*np.sqrt((a+b*n)**2+(c+d*n)**2+e**2))/np.sqrt(((c+d*n)**2+e**2)*((a*d-b*c)**2+(e**2)*(b**2+d**2)))
+    if abs(x) <= 1:
+        number = np.arccos(x)
+    else: 
+        number = np.arccos(1)
     if t >= 0 :
         return - number
     return number
@@ -49,8 +53,8 @@ def homogeneous (triange,point):
     return (2*area(triange)/alpha)*(stora_j(a, a_prim, b, b_prim, c, c_prim, d, e, 1)-stora_j(a, a_prim, b, b_prim, c, c_prim, d, e, 0))
 
 
-n = homogeneous(np.array([[1,0,0],[0.5,0.867,0],[0,0,0]]), np.array([0.5,0.289,0.5]))
-m = homogeneous(np.array([[0,0,0],[1,0,0], [0.25,1,0]]), np.array([2,0,2]))
+#n = homogeneous(np.array([[1,0,0],[0.5,0.867,0],[0,0,0]]), np.array([0.5,0.289,0.5]))
+#m = homogeneous(np.array([[0,0,0],[1,0,0], [0.25,1,0]]), np.array([2,0,2]))
 
 #print(n)
 #print(m)

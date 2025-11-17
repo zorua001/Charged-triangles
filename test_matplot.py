@@ -9,6 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt 
 from matplotlib.tri import Triangulation
 import Homogeneous as hct
+import Charges as ch
 
 
 #behöver radie och mittpunkt på sfär
@@ -33,11 +34,12 @@ def centroids_sphere(tri,r):
     y = np.array(r*np.sin(tri.y)*np.sin(tri.x))
     z = np.array(r*np.cos(tri.y))
     for i in range (len(triangles)):
-        k = [x[triangles[i][0]]+x[triangles[i][1]+x[triangles[i][2]]]]
-    
-    
-    
-    return
+        k = [(x[triangles[i][0]]+x[triangles[i][1]]+x[triangles[i][2]])/3,(y[triangles[i][0]]+y[triangles[i][1]]+y[triangles[i][2]])/3,(z[triangles[i][0]]+z[triangles[i][1]]+z[triangles[i][2]])/3]
+        centroid = np.append(centroid,k)
+    centroid = np.delete(centroid, 0)
+    centroid = centroid.reshape(len(triangles),3)
+    print(centroid)
+    return centroid
     
     
 def cyinder():  
@@ -63,5 +65,12 @@ def cyinder():
 
 # Render:
 x,y,z,tri = sphere(2, [1,1,1])
+centroid = centroids_sphere(tri,2)
+centroid_reduced = [centroid[2*i] for i in range (int(len(centroid)/2))]
+centroid_points = [centroid[2*i+1] for i in range (int(len(centroid)/2))]
+color = ch.charge(centroid_reduced, centroid_points, 4)
+color = color/max(color)
+
+
 ax = plt.axes(projection='3d')
-ax.plot_trisurf(x, y, z, triangles=tri.triangles, cmap='viridis', antialiased=True) 
+ax.plot_trisurf(x, y, z, triangles=tri.triangles, cmap=color, antialiased=True) 
