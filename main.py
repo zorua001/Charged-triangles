@@ -2,6 +2,16 @@
 """
 Created on Tue Nov 18 10:20:00 2025
 
+This is the main file where everything is controlled.
+
+To run a simulation enter the console in this directory and run this script. 
+If you want specific settings add them after the file.
+
+example:
+    cd C:/Users/Name/triangles_and_spacecraft #bc unicode had to use wrong direction on /
+    python main.py #Uses default settings
+    python main.py --settings=my_settings #Uses the file my_settings which you have created
+
 @author: Hampus Berndt
 """
 

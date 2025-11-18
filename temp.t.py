@@ -8,8 +8,8 @@ This is a temporary script file.
 
 import open3d as o3d
 import numpy as np
-import Homogeneous as hct
-import Charges as ch
+import charge.homogeneous as hct
+import charge.point_charges as ch
 
 def homogen (centroid,triangle,vertice,färg):
     for j in range (len(centroid)):
