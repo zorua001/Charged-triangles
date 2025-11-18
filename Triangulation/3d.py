@@ -7,7 +7,7 @@ Created on Fri Nov  7 13:46:38 2025
 
 import open3d as o3d
 import numpy as np
-import Homogeneous as hct
+import charge.homogeneous as hct
 
 ##Kanske ändra til 
 mesh = o3d.geometry.TriangleMesh.create_cylinder(1,8,20,8)

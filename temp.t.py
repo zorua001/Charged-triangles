@@ -8,8 +8,8 @@ This is a temporary script file.
 
 import open3d as o3d
 import numpy as np
-import Homogeneous as hct
-import Charges as ch
+import charge.homogeneous as hct
+import charge.point_charges as ch
 
 def homogen (centroid,triangle,vertice,färg):
     for j in range (len(centroid)):
@@ -34,7 +34,7 @@ def point_ch(centroid):
     return färg    
     
 ##Kanske ändra till o3d.t 
-mesh = o3d.t.geometry.TriangleMesh.create_cylinder(1,3,40,80)
+mesh = o3d.t.geometry.TriangleMesh.create_cylinder(1,3,10,10)
 #print(mesh.vertex["positions"].numpy())
 
 
