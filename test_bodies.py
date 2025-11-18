@@ -1,22 +1,23 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Nov 18 10:20:00 2025
+Created on Tue Nov 18 12:47:02 2025
 
-This is the main file where everything is controlled.
+This function draws and shows the bodies in your setup file without any other 
+calculations so you can swiftly test that the setup is correct
 
-To run a simulation enter the console in this directory and run this script. 
-If you want specific settings add them after the file.
+example of how to run :
+    cd C:/Users/Name/triangles_and_spacecraft #go to the project directory
+    python test_bodies.py #Run with default settings
+    python test_bodies.py --settings=my_settings #Uses the file my_settings which you have created
 
-example:
-    cd C:/Users/Name/triangles_and_spacecraft #bc unicode had to use wrong direction on /
-    python main.py #Uses default settings
-    python main.py --settings=my_settings #Uses the file my_settings which you have created
 
 @author: Hampus Berndt
 """
 
+
 import argparse
 from config.settings_loader import load_settings
+import open3d as o3d
 
 
 
@@ -27,10 +28,7 @@ def run_simulation(simulation_params):
     
     
     #Create the bodies
-    
-    
-    
-    # Continue...
+    o3d.visualization.draw([body.mesh for body in simulation_params['bodies']])
     
         
  
