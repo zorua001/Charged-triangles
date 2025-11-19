@@ -31,7 +31,7 @@ def point_ch(centroid):
     k = ch.charge(centroid, centroid, 4)
     k = k/max(k)
     färg = np.array([[i,1-i,0] for i in k])
-    return färg    
+    return färg
     
 ##Kanske ändra till o3d.t 
 mesh = o3d.t.geometry.TriangleMesh.create_cylinder(1,3,10,10)

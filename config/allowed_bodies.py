@@ -8,6 +8,10 @@ Each body is defined as a Body which has several subcategories such as
 cylinders, sphere, cubes... Each body then creates a open3d triangulation mesh
 which is used later in the program.
 
+Some other useful methods are also here that can be used in other files. 
+Currently:
+    -get_centroids
+
 @author: Hampus Berndt
 """
 import open3d as o3d
@@ -37,11 +41,49 @@ class Body:
         meshTemp= self.shape.get_mesh().translate(self.pos)
         #The rot parameter rotates the object around its center in xyz directions (radians)
         self._mesh = meshTemp.rotate(o3d.core.Tensor(create_rotation_matrix(self.rot).astype(np.float64)), o3d.core.Tensor(np.array(self.pos).astype(np.float64)))
-    
+        self._charges = None #We originally have no charges in the body
+        
+        
+    def __str__(self):
+        """Return a string representation of the body."""
+        return f"{self.shape_type} with position {self.pos}, rotation {self.rot} and other parameters"
+
     @property
     def mesh(self):
         """Getter method for the mesh."""
         return self._mesh
+    
+        
+    @property
+    def charges(self):
+        """Get the charges."""
+        return self._charges
+
+    @charges.setter
+    def charges(self, charges):
+        """Set the charges."""
+        #Add tests to see that charges are correct
+        self._charges = charges
+        
+                
+    def get_centroids(self):
+        """Gives a list of all the centroids of the triangles"""
+        centroid = np.empty([len(self._triangles),3])
+        for i in range (len(self._triangles)):
+            h = np.asarray([self._vertices[int(self._triangles[i][0])],self._vertices[int(self._triangles[i][1])],self._vertices[int(self._triangles[i][2])]])
+            t = sum(sum(h[0],h[1]),h[2])/3
+            centroid[i] = t    
+        return centroid
+
+    
+    def calculate_colors(self, method):
+        """Calculates the colours on all the triangles"""
+        """Currently only point charge method implemented"""
+        if(method=='point_charge'):
+            self._mesh.triangle.colors = o3d.core.Tensor(get_color(self._charges),o3d.core.float32)    
+        else:
+            ValueError(f'{method} is not a valid method in calculate_colours in Body. Try point_charge')
+        
     
     
 
@@ -65,6 +107,20 @@ class Sphere:
         return o3d.t.geometry.TriangleMesh.create_sphere
 
 #Add more objects here!
+
+"""
+Returns a list of colors equally long as the list sent in.
+Takes a list of values which represents relative colour.
+"""
+def get_color(relative_values):
+    #We copy the list so that nothing happens to the original
+    temp = copy.deepcopy(relative_values)
+    #We get values between 0 and 1
+    temp = temp/max(temp)
+    #We create a color spectrum where lowest value will be green and highest red
+    color = np.array([[i,1-i,0] for i in temp])
+    return color
+    
 
 
 """
