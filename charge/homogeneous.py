@@ -6,6 +6,8 @@ Created on Wed Nov  5 13:44:27 2025
 """
 
 import numpy as np
+import functools
+import concurrent.futures as future
 
 def stora_p (a,b,c,d,e,n):
     return 2*np.log((b**2+d**2)*n+a*b+c*d+np.sqrt(((b**2+d**2)*n+a*b+c*d)**2+(a*d-b*c)**2+e**2*(b**2+d**2)))
@@ -38,7 +40,7 @@ def area (triange):
     
     
 def homogeneous (triange,point):
-    alpha = sum([(triange[0][k]-triange[2][k])**2 for k in range (3)])**0.5
+    alpha = np.linalg.norm(triange[0]-triange[2])
     b_prim = np.dot((triange[0]-triange[2]),np.transpose(triange[1]-triange[2]))/(alpha**2)
     a_prim = np.dot((triange[0]-triange[2]),np.transpose(triange[2]-point))/(alpha**2)
     a = 1 + a_prim
@@ -52,6 +54,20 @@ def homogeneous (triange,point):
     c_prim = c ##Ingen aning vad c_prim är
     return (2*area(triange)/alpha)*(stora_j(a, a_prim, b, b_prim, c, c_prim, d, e, 1)-stora_j(a, a_prim, b, b_prim, c, c_prim, d, e, 0))
 
+
+#Kopierade från Parallell_charges
+def charge(vertex_coordinates,points,potentia):
+    print("hello")
+    distance = np.zeros([len(vertex_coordinates),len(points)])
+    for i in range (len(vertex_coordinates)):
+        k = functools.partial(homogeneous,vertex_coordinates[i])
+        with future.ThreadPoolExecutor() as executor:
+            distance[i] = list(executor.map(k, points))
+        print("k")
+    potentia = np.ones(len(points))*potentia
+    print("hej")
+    t = np.linalg.lstsq(distance.astype('float') , potentia.astype('float'),rcond=-1)[0]
+    return t
 
 #n = homogeneous(np.array([[1,0,0],[0.5,0.867,0],[0,0,0]]), np.array([0.5,0.289,0.5]))
 #m = homogeneous(np.array([[0,0,0],[1,0,0], [0.25,1,0]]), np.array([2,0,2]))

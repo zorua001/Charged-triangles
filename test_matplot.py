@@ -8,8 +8,7 @@ Created on Thu Nov 13 16:21:39 2025
 import numpy as np
 import matplotlib.pyplot as plt 
 from matplotlib.tri import Triangulation
-import Homogeneous as hct
-import Charges as ch
+import parallell_2 as ch
 
 
 #behöver radie och mittpunkt på sfär
