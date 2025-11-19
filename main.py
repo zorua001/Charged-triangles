@@ -19,10 +19,11 @@ import argparse
 from config.settings_loader import load_settings
 import numpy as np
 import charge.point_charges as pc
+from config.save_data import save_data
 
 
 
-def run_simulation(simulation_params):
+def run_simulation(simulation_params, settings_name):
     #1. Specify the bodies
         #Done in the setup file with the parameter 'bodies' where you can add
         #whichever setup you want as long as it is composed of the supported 
@@ -71,6 +72,11 @@ def run_simulation(simulation_params):
          
     o3d.visualization.draw([body.mesh for body in bodies])
     
+    
+    #7. Save the result
+        #We save the result so that it can be loaded again
+    save_data(settings_name,simulation_params)
+    
         
  
 def parse_arguments():
@@ -81,5 +87,5 @@ def parse_arguments():
 if __name__ == "__main__":
     args = parse_arguments()
     simulation_params = load_settings(args.settings)
-    run_simulation(simulation_params)
+    run_simulation(simulation_params, args.settings)
 
