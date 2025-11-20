@@ -16,6 +16,7 @@ Currently:
 """
 import open3d as o3d
 import numpy as np
+import copy
 
 class Body:
     def __init__(self, shape_type,pos= [0,0,0],rot=[0,0,0], **kwargs):
@@ -43,7 +44,6 @@ class Body:
         self._mesh = meshTemp.rotate(o3d.core.Tensor(create_rotation_matrix(self.rot).astype(np.float64)), o3d.core.Tensor(np.array(self.pos).astype(np.float64)))
         self._charges = None #We originally have no charges in the body
         
-        
     def __str__(self):
         """Return a string representation of the body."""
         return f"{self.shape_type} with position {self.pos}, rotation {self.rot} and other parameters"
@@ -68,23 +68,39 @@ class Body:
                 
     def get_centroids(self):
         """Gives a list of all the centroids of the triangles"""
-        centroid = np.empty([len(self._triangles),3])
-        for i in range (len(self._triangles)):
-            h = np.asarray([self._vertices[int(self._triangles[i][0])],self._vertices[int(self._triangles[i][1])],self._vertices[int(self._triangles[i][2])]])
-            t = sum(sum(h[0],h[1]),h[2])/3
+        triangles = self._mesh.triangle["indices"].numpy()
+        vertices = self._mesh.vertex["positions"].numpy()
+        centroid = np.empty([len(triangles),3])
+        for i in range (len(triangles)):
+            h = np.asarray([vertices[int(triangles[i][0])],vertices[int(triangles[i][1])],vertices[int(triangles[i][2])]])
+            t = [(h[0][j]+h[1][j]+h[2][j])/3 for j in range (3)]
             centroid[i] = t    
         return centroid
 
+    def areas_of_triangles(self):
+        """Calculates the areas of the triangles in the mesh"""
+        triangles = self._mesh.triangle["indices"].numpy()
+        vertices = self._mesh.vertex["positions"].numpy()
+        surface = np.zeros(len(triangles))
+        for i in range (len(triangles)):
+            surface[i] = np.linalg.norm(np.cross(vertices[int(triangles[i][1])]-vertices[int(triangles[i][0])],vertices[int(triangles[i][2])]-vertices[int(triangles[i][0])]))
+        return surface
+    
     
     def calculate_colors(self, method):
         """Calculates the colours on all the triangles"""
         """Currently only point charge method implemented"""
+        areas = self.areas_of_triangles()
         if(method=='point_charge'):
-            self._mesh.triangle.colors = o3d.core.Tensor(get_color(self._charges),o3d.core.float32)    
+            if len(self._charges) == len(areas):
+                charge_density = [charge / area for charge, area in zip(self._charges, areas)]
+            else:
+                raise ValueError("Both lists must be of the same length.")            
+            self._mesh.triangle.colors = o3d.core.Tensor(get_color(charge_density),o3d.core.float32) 
+            return
         else:
             ValueError(f'{method} is not a valid method in calculate_colours in Body. Try point_charge')
-        
-    
+   
     
 
 class Cylinder:
@@ -118,7 +134,7 @@ def get_color(relative_values):
     #We get values between 0 and 1
     temp = temp/max(temp)
     #We create a color spectrum where lowest value will be green and highest red
-    color = np.array([[i,1-i,0] for i in temp])
+    color = np.array([[0.5+0.5*i,0.5-0.5*i,0] for i in temp])
     return color
     
 
@@ -148,3 +164,4 @@ def create_rotation_matrix(rot):
     # Combined rotation matrix
     R = R_z @ R_y @ R_x
     return R
+

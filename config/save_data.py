@@ -13,7 +13,7 @@ We also save the current version of the code so that we can redo experiments
 
 import pickle
 import os
-import git
+import get_git_version
 
 #Because setting_params holds bodies we only need to save setting params and 
 #can then run 
@@ -47,12 +47,3 @@ def get_unique_filename(subdirectory,base_name):
         filename = os.path.join(subdirectory, f"{base_name}_{index}.pkl")
     
     return filename
-
-def get_git_version():
-    try:
-        # Assuming the current directory is part of a Git repository
-        repo = git.Repo(search_parent_directories=True)
-        return repo.head.object.hexsha  # Get the commit hash
-    except Exception as e:
-        print(f"Error retrieving Git version: {e}")
-        return "unknown"

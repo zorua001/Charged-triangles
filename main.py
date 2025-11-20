@@ -14,7 +14,7 @@ example:
 
 @author: Hampus Berndt
 """
-import Open3d as o3d
+import open3d as o3d
 import argparse
 from config.settings_loader import load_settings
 import numpy as np
@@ -41,9 +41,14 @@ def run_simulation(simulation_params, settings_name):
     
     #3. We put out the pointcharges in the triangles
         #currently put in the centroids of the triangles
-    centroids = np.array
+    
+    centroids = None
     for body in bodies:
-        centroids+=body.get_centroids
+        s_centroids = body.get_centroids()
+        if centroids is None:
+            centroids = s_centroids
+        else:
+            centroids += s_centroids
         
         
     #4. Specify the potentials in some points.
@@ -60,15 +65,15 @@ def run_simulation(simulation_params, settings_name):
     charges = pc.charge(centroids, centroids, potential)
     i = 0
     for body in bodies:
-        body.charges = charges[i:i+len(body.triangles)]
-        i+=len(body.triangles)
+        body.charges = charges[i:i+len(body._mesh.triangle["indices"].numpy())]
+        i+=len(body._mesh.triangle["indices"].numpy())
     del i
     
     #6.Visualize
         #We create the colors in the bodies.
         #We then visualize all the bodies
     for body in bodies:
-        body.calculate_colors()
+        body.calculate_colors('point_charge')
          
     o3d.visualization.draw([body.mesh for body in bodies])
     
