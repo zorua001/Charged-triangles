@@ -95,7 +95,7 @@ class Body:
             if len(self._charges) == len(areas):
                 charge_density = [charge / area for charge, area in zip(self._charges, areas)]
             else:
-                raise ValueError("Both lists must be of the same length.")            
+                raise ValueError(f'Both lists must be of the same length. They are now {len(self._charges)} and {len(areas)}')            
             self._mesh.triangle.colors = o3d.core.Tensor(get_color(charge_density),o3d.core.float32) 
             return
         else:
