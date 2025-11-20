@@ -21,8 +21,9 @@ def charge(charge_coordinates,points,potentia):
             korta =sum([(points[i][k]-charge_coordinates[j][k])**2 for k in range (3)])**0.5
             if korta != 0:
                 korta = 1/korta
-            distance[i][j] = korta 
+            distance[j][i] = korta 
     potentia = np.ones(len(points))*potentia
+    print(distance)
     print("hej")
     return np.linalg.lstsq(distance.astype('float') , potentia.astype('float'),rcond=-1)[0]
 

@@ -11,7 +11,7 @@ import functools
 
 def beräkning (charge_coordinate,point):
     korta= np.linalg.norm(np.asarray(point)-np.asarray(charge_coordinate))
-    if korta != 0:
+    if korta != 0:  
         return 1/korta
     return korta
 

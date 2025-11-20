@@ -16,5 +16,5 @@ SIMULATION_PARAMS = {
     #Which charge distribution is used. Options are point_charge, korean, homogenous
     'charge_distribution_method': 'point_charge',
     #Which geometric bodies exist in this setup (see file allowed_bodies)
-    'bodies': [Body('cylinder', pos=[0,0,0],rot=[0,0,0], radius=1, height=5,length_resolution=5, height_resolution=5),]
+    'bodies': [Body('cylinder', pos=[0,0,0],rot=[0,0,0], radius=1, height=5,length_resolution=20, height_resolution=20),]
 }

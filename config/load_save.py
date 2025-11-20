@@ -8,7 +8,7 @@ Loads a saved simulation result
 
 import pickle
 import os
-import get_git_version
+import config.get_git_version as get_git_version
 
 def load_save(save_name):
     subdirectory = 'saves'
@@ -24,7 +24,7 @@ def load_save(save_name):
     with open(filename, 'rb') as file:
         loaded_save = pickle.load(file)
     
-    current_code_version = get_git_version()
+    current_code_version = get_git_version
     
     if(current_code_version==loaded_save['code_version']):
         print('You are using the same code version as the save file!')

@@ -13,7 +13,7 @@ We also save the current version of the code so that we can redo experiments
 
 import pickle
 import os
-import get_git_version
+import config.get_git_version as get_git_version
 
 #Because setting_params holds bodies we only need to save setting params and 
 #can then run 

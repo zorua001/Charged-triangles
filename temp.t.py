@@ -55,11 +55,17 @@ def centroid(mesh):
     vertice = mesh.vertex["positions"].numpy()
     triangle = mesh.triangle["indices"].numpy()
     centroid = np.empty([len(triangle),3])
+    extended = np.empty([3*len(triangle),3])
+    w = 0.5
     for i in range (len(triangle)):
         h = np.asarray([vertice[int(triangle[i][0])],vertice[int(triangle[i][1])],vertice[int(triangle[i][2])]])
         t = [(h[0][j]+h[1][j]+h[2][j])/3 for j in range (3)]
         centroid[i] = t
-    return centroid,vertice,triangle
+        extended[3*i] = [(w*h[0][j]+h[1][j]+h[2][j])/(2+w) for j in range (3)]
+        extended[3*i+1] = [(h[0][j]+w*h[1][j]+h[2][j])/(2+w) for j in range (3)]
+        extended[3*i+2] = [(h[0][j]+h[1][j]+w*h[2][j])/(2+w) for j in range (3)]
+    print(len(extended))
+    return centroid,vertice,triangle,extended
 
 def area(vertice,triangle):
     surface = np.zeros(len(triangle))
@@ -86,15 +92,16 @@ mesh2 = o3d.t.geometry.TriangleMesh.create_sphere(.5,10)
 mesh2 = mesh2.translate(o3d.core.Tensor([1.2,1.2,0]))
 
 
-center,vertice,triangle = centroid(mesh)
-center_2,vertice_2,triangle_2 = centroid(mesh2)
+center,vertice,triangle,extended = centroid(mesh)
+center_2,vertice_2,triangle_2,extended = centroid(mesh2)
 tot = np.concatenate((center,center_2))
 
 #Ändra från true eller false om man ska använda fler punkter eller inte
-decision = 1
+decision = 0
+
 
 t = time.time()
-färg = point_ch(center,vertice,triangle,decision)
+färg = point_ch(extended,vertice,triangle,decision)
 
 #färg_2 = homogen(center,vertice,triangle)
 s = time.time()
