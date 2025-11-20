@@ -8,12 +8,12 @@ Loads a saved simulation result
 
 import pickle
 import os
-from save_data import get_git_version
+import get_git_version
 
 def load_save(save_name):
     subdirectory = 'saves'
     
-    filename = os.path.join('saves', f"{save_name}.pkl")
+    filename = os.path.join(subdirectory, f"{save_name}.pkl")
     
     
     # Check if the file exists
