@@ -42,15 +42,15 @@ def run_simulation(simulation_params, settings_name):
     #3. We put out the pointcharges in the triangles
         #currently put in the centroids of the triangles
     
-    centroids = None
+    centroids = [] 
     for body in bodies:
-        s_centroids = body.get_centroids()
-        if centroids is None:
-            centroids = s_centroids
-        else:
-            centroids += s_centroids
-        
-        
+        s_centroids = body.get_centroids()  # Get the centroids, which is a 2D array
+        centroids.append(s_centroids) 
+
+    # Now concatenate all the collected centroids into one array
+    centroids = np.vstack(centroids) if centroids else np.array([])  # Combine all into one array if not empty
+
+
     #4. Specify the potentials in some points.
         #Currently using the centroids and a constant potential specified in 
         #the simulation parameters under 'potential'
@@ -65,6 +65,8 @@ def run_simulation(simulation_params, settings_name):
     charges = pc.charge(centroids, centroids, potential)
     i = 0
     for body in bodies:
+        print('i')
+        print(i)
         body.charges = charges[i:i+len(body._mesh.triangle["indices"].numpy())]
         i+=len(body._mesh.triangle["indices"].numpy())
     del i
