@@ -19,11 +19,8 @@ from config.allowed_bodies import Body
 #Loads the settingsfile requested
 def load_settings(settings_file):
     try:
-        print(1)
         module = importlib.import_module(f'settings.{settings_file}')
-        print(2)
         settings = module.SIMULATION_PARAMS
-        print(3)
         validate_settings(settings)  # Validate settings before returning
         return settings
     except ImportError:
@@ -33,7 +30,7 @@ def load_settings(settings_file):
 #Validates the settings, making sure that they are allowed
 #Important to update the validator when adding a new setting or parameter
 def validate_settings(settings):
-    required_keys = ['charge_distribution_method','potential', 'bodies']
+    required_keys = ['charge_distribution_method','field_point_method', 'bodies']
     
     for key in required_keys:
         if key not in settings:
@@ -42,8 +39,9 @@ def validate_settings(settings):
     if not isinstance(settings['charge_distribution_method'], str) and settings['charge_distribution_method'] in ['point_charge', 'korean', 'homogenous']:
         raise ValueError("charge_distribution_method must be one of point_charge, korean, homogenous")
     
-    if not (isinstance(settings['potential'], float) and settings['potential']!=0):
-        raise ValueError("potential must be a non-zero float")
+    if not isinstance(settings['field_point_method'], str) and settings['field_point_method'] in ['centroid']:
+        raise ValueError("charge_distribution_method must be one of centroid")
+        
         
     if not isinstance(settings['bodies'], list):
         raise ValueError("Expected 'bodies' to be a list.")

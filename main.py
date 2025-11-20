@@ -18,7 +18,7 @@ import open3d as o3d
 import argparse
 from config.settings_loader import load_settings
 import numpy as np
-import charge.point_charges as pc
+from charge.calculate_charge import calculate_charge
 from config.save_data import save_data
 
 
@@ -39,8 +39,9 @@ def run_simulation(simulation_params, settings_name):
     print(f'Simulation parameters: {simulation_params}')
     
     
-    #3. We put out the pointcharges in the triangles
-        #currently put in the centroids of the triangles
+    #3. We determine the charge information
+    
+    charge_distribution_method = simulation_params['charge_distribution_method']
     
     centroids = [] 
     for body in bodies:
@@ -49,12 +50,26 @@ def run_simulation(simulation_params, settings_name):
 
     # Now concatenate all the collected centroids into one array
     centroids = np.vstack(centroids) if centroids else np.array([])  # Combine all into one array if not empty
-
+    
+    if charge_distribution_method == 'point_charge':
+        charge_information = centroids
+    else:
+        ValueError('We need an allowed charge_calculation_method')
 
     #4. Specify the potentials in some points.
-        #Currently using the centroids and a constant potential specified in 
-        #the simulation parameters under 'potential'
-    potential = simulation_params['potential']
+        #Currently each body has a potential from settings
+        #Currently using the centroids as field points
+        #todo: add that you can overdetermine the system
+        #todo: change what fieldpoints we have
+    field_point_method = simulation_params['field_point_method']
+    if field_point_method == 'centroid':
+        field_points = centroids
+        field_point_potentials = np.empty(0)
+        for body in bodies:
+            field_point_potentials=np.concatenate((field_point_potentials,np.full(len(body._mesh.triangle["indices"].numpy()), body.potential)))
+    else:
+        ValueError('We need an allowed field_point_method')
+    
     
     
     #5 We calculate the charges 
@@ -62,11 +77,14 @@ def run_simulation(simulation_params, settings_name):
         #The charges are then put out to the bodies in the order and length 
         #that centroid were put in
         #This method relies on bodies being ordered (such as a list)
-    charges = pc.charge(centroids, centroids, potential)
+    #charges = pc.charge(centroids, centroids, potential)
+    if(simulation_params['charge_distribution_method']=='point_charge'):    
+        charges = calculate_charge('point_charge', charge_information,field_points,field_point_potentials)
+    
+    
+    
     i = 0
     for body in bodies:
-        print('i')
-        print(i)
         body.charges = charges[i:i+len(body._mesh.triangle["indices"].numpy())]
         i+=len(body._mesh.triangle["indices"].numpy())
     del i
