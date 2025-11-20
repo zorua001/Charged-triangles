@@ -27,16 +27,16 @@ def homogen (center,triangle,vertice):
     return färg_2
 
 #beräknar laddning på punktladdning
-def point_ch(centroid,vertice,triangle,decision):
+def point_ch(centroid,extended,vertice,triangle,decision):
     surface = area(vertice, triangle)
     if decision:
-        k = ch.charge(centroid, more_points(centroid), -5)
-        k = [k[3*i]+k[3*i+1]+ k[3*i+2] for i in range (len(triangle))]
+        k = ch.charge(center, extended, -5)
     else:
         k = ch.charge(centroid,centroid,-5)
     k = k/surface
     k = k/max(abs(k))
-    färg = np.array([[0.5+0.5*i,0.5-0.5*i,0] for i in k])
+    print(k)
+    färg = np.array([[-i,1+i,0] for i in k])
     return färg    
 
 #Beräknar laddning utifrån homogen fördelning
@@ -93,20 +93,20 @@ mesh2 = mesh2.translate(o3d.core.Tensor([1.2,1.2,0]))
 
 
 center,vertice,triangle,extended = centroid(mesh)
-center_2,vertice_2,triangle_2,extended = centroid(mesh2)
+center_2,vertice_2,triangle_2,extended_2 = centroid(mesh2)
 tot = np.concatenate((center,center_2))
 
 #Ändra från true eller false om man ska använda fler punkter eller inte
-decision = 0
+decision = 1
 
 
 t = time.time()
-färg = point_ch(extended,vertice,triangle,decision)
+#färg = point_ch(center,extended,vertice,triangle,decision)
 
-#färg_2 = homogen(center,vertice,triangle)
+färg_2 = homogeneous_ch(center,vertice,triangle)
 s = time.time()
 print(s-t)
-mesh.triangle.colors = o3d.core.Tensor(färg[:len(center)],o3d.core.float32)
+mesh.triangle.colors = o3d.core.Tensor(färg_2[:len(center)],o3d.core.float32)
 mesh.compute_vertex_normals()
 
 more_points(np.array([[1,2,3]]))

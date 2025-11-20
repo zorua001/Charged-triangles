@@ -81,6 +81,8 @@ def charge_2(vertex_coordinates,points,potentia):
     t = np.linalg.lstsq(distance.astype('float') , potentia.astype('float'),rcond=-1)[0]
     return t
 
+
+memory = {}
 #n = homogeneous(np.array([[1,0,0],[0.5,0.867,0],[0,0,0]]), np.array([0.5,0.289,0.5]))
 #m = homogeneous(np.array([[0,0,0],[1,0,0], [0.25,1,0]]), np.array([2,0,2]))
 
