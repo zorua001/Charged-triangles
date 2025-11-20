@@ -69,6 +69,18 @@ def charge(vertex_coordinates,points,potentia):
     t = np.linalg.lstsq(distance.astype('float') , potentia.astype('float'),rcond=-1)[0]
     return t
 
+def charge_2(vertex_coordinates,points,potentia):
+    print("hello")
+    distance = np.zeros([len(vertex_coordinates),len(points)])
+    for j in range(len(vertex_coordinates)):
+        for i in range(len(points)):
+            distance[j,i] = homogeneous(vertex_coordinates[j], points[i])
+        print("k")
+    potentia = np.ones(len(points))*potentia
+    print("hej")
+    t = np.linalg.lstsq(distance.astype('float') , potentia.astype('float'),rcond=-1)[0]
+    return t
+
 #n = homogeneous(np.array([[1,0,0],[0.5,0.867,0],[0,0,0]]), np.array([0.5,0.289,0.5]))
 #m = homogeneous(np.array([[0,0,0],[1,0,0], [0.25,1,0]]), np.array([2,0,2]))
 

@@ -9,7 +9,7 @@ This is a temporary script file.
 import open3d as o3d
 import numpy as np
 import charge.homogeneous as hct
-import Parallell_charges as ch
+import parallell_2 as ch
 import time
 
 def homogen (center,triangle,vertice):
@@ -27,9 +27,13 @@ def homogen (center,triangle,vertice):
     return färg_2
 
 #beräknar laddning på punktladdning
-def point_ch(centroid,vertice,triangle):
+def point_ch(centroid,vertice,triangle,decision):
     surface = area(vertice, triangle)
-    k = ch.charge(centroid, centroid, -5)
+    if decision:
+        k = ch.charge(centroid, more_points(centroid), -5)
+        k = [k[3*i]+k[3*i+1]+ k[3*i+2] for i in range (len(triangle))]
+    else:
+        k = ch.charge(centroid,centroid,-5)
     k = k/surface
     k = k/max(abs(k))
     färg = np.array([[0.5+0.5*i,0.5-0.5*i,0] for i in k])
@@ -39,7 +43,8 @@ def point_ch(centroid,vertice,triangle):
 def homogeneous_ch(centroid,vertice,triangle):
     t = np.array([[vertice[int(triangle[i][0])],vertice[int(triangle[i][1])],vertice[int(triangle[i][2])]] for i in range (len(triangle))])
     surface = area(vertice, triangle)
-    k = hct.charge(t, centroid, -5)
+    k = hct.charge_2(t, centroid, -5)
+   
     k = k/surface
     k = k/max(abs(k))
     färg = np.array([[0.5+0.5*i,0.5-0.5*i,0] for i in k])
@@ -61,9 +66,20 @@ def area(vertice,triangle):
     for i in range (len(triangle)):
         surface[i] = np.linalg.norm(np.cross(vertice[int(triangle[i][1])]-vertice[int(triangle[i][0])],vertice[int(triangle[i][2])]-vertice[int(triangle[i][0])]))
     return surface
-    
+
+def more_points(centroid):
+    points = np.array
+    points = np.delete(points, 0)
+    w = 0.5
+    for i in range (len(centroid)):
+        points = np.append(points, [w*centroid[i][0],centroid[i][1],centroid[i][2]])
+        points = np.append(points, [centroid[i][0],w*centroid[i][1],centroid[i][2]])
+        points = np.append(points, [centroid[i][0],centroid[i][1],w*centroid[i][2]])
+    points = points.reshape((len(centroid)*3,3))
+    print(len(points))
+    return points
 ##Kanske ändra till o3d.t 
-mesh = o3d.t.geometry.TriangleMesh.create_cylinder(1,3,20,10)
+mesh = o3d.t.geometry.TriangleMesh.create_cylinder(1,3,20,20)
 #print(mesh.vertex["positions"].numpy())
 
 mesh2 = o3d.t.geometry.TriangleMesh.create_sphere(.5,10)
@@ -73,8 +89,12 @@ mesh2 = mesh2.translate(o3d.core.Tensor([1.2,1.2,0]))
 center,vertice,triangle = centroid(mesh)
 center_2,vertice_2,triangle_2 = centroid(mesh2)
 tot = np.concatenate((center,center_2))
+
+#Ändra från true eller false om man ska använda fler punkter eller inte
+decision = 1
+
 t = time.time()
-färg = homogeneous_ch(center,vertice,triangle)
+färg = point_ch(center,vertice,triangle,decision)
 
 #färg_2 = homogen(center,vertice,triangle)
 s = time.time()
@@ -82,6 +102,7 @@ print(s-t)
 mesh.triangle.colors = o3d.core.Tensor(färg[:len(center)],o3d.core.float32)
 mesh.compute_vertex_normals()
 
+more_points(np.array([[1,2,3]]))
 
 #mesh2.triangle.colors = o3d.core.Tensor(färg,o3d.core.float32)
 mesh2.compute_vertex_normals()
