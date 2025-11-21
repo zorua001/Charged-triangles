@@ -5,25 +5,26 @@ Created on Tue Nov 18 10:20:00 2025
 This is the main file where everything is controlled.
 
 To run a simulation enter the console in this directory and run this script. 
-If you want specific settings add them after the file.
+If you want specific settings for the simulation or visualization add them after the file.
 
 example:
     cd C:/Users/Name/triangles_and_spacecraft #bc unicode had to use wrong direction on /
     python main.py #Uses default settings
     python main.py --settings=my_settings #Uses the file my_settings which you have created
-
+    python main.py --settings=my_settings --visualization=my_vis #Uses visualization settings my_vis as well
 @author: Hampus Berndt
 """
 import open3d as o3d
 import argparse
-from config.settings_loader import load_settings
+from config.settings_loader import load_simulation_settings
+from config.settings_loader import load_visualization_settings
 import numpy as np
 from charge.calculate_charge import calculate_charge
 from config.save_data import save_data
 
 
 
-def run_simulation(simulation_params, settings_name):
+def run_simulation(simulation_params, visualization_params, settings_name):
     #1. Specify the bodies
         #Done in the setup file with the parameter 'bodies' where you can add
         #whichever setup you want as long as it is composed of the supported 
@@ -53,6 +54,19 @@ def run_simulation(simulation_params, settings_name):
     
     if charge_distribution_method == 'point_charge':
         charge_information = centroids
+    elif(charge_distribution_method=='homogenous'):
+         triangles = []
+         vertices = []
+         for body in bodies:
+             # Get the centroids, which is a 2D array
+             s_triangles = body.get_triangles()
+             s_vertices = body.get_vertices()
+             triangles.append(s_triangles)
+             vertices.append(s_vertices) 
+         triangles = np.vstack(triangles) if triangles else np.array([])
+         vertices = np.vstack(vertices) if vertices else np.array([])
+             
+         charge_information = np.array([[vertices[int(triangles[i][0])],vertices[int(triangles[i][1])],vertices[int(triangles[i][2])]] for i in range (len(triangles))])
     else:
         ValueError('We need an allowed charge_calculation_method')
 
@@ -66,7 +80,18 @@ def run_simulation(simulation_params, settings_name):
         field_points = centroids
         field_point_potentials = np.empty(0)
         for body in bodies:
-            field_point_potentials=np.concatenate((field_point_potentials,np.full(len(body._mesh.triangle["indices"].numpy()), body.potential)))
+            field_point_potentials=np.concatenate((field_point_potentials,np.full(len(body.get_triangles()), body.potential)))
+    elif field_point_method == 'triple':
+        field_points = [] 
+        for body in bodies:
+            s_field_points = body.get_triple_points(simulation_params['offset'])
+            field_points.append(s_field_points) 
+        
+        field_points = np.vstack(field_points) if field_points else np.array([])  # Combine all into one array if not empty
+        field_point_potentials = np.empty(0)
+        for body in bodies:
+            field_point_potentials=np.concatenate((field_point_potentials,np.full(len(body.get_triangles())*3, body.potential)))
+    
     else:
         ValueError('We need an allowed field_point_method')
     
@@ -77,22 +102,21 @@ def run_simulation(simulation_params, settings_name):
         #The charges are then put out to the bodies in the order and length 
         #that centroid were put in
         #This method relies on bodies being ordered (such as a list)
-    #charges = pc.charge(centroids, centroids, potential)
-    if(simulation_params['charge_distribution_method']=='point_charge'):    
-        charges = calculate_charge('point_charge', charge_information,field_points,field_point_potentials)
-    
+    charges = calculate_charge(charge_distribution_method, charge_information, field_points, field_point_potentials)
+
     i = 0
     for body in bodies:
-        body.charges = charges[i:i+len(body._mesh.triangle["indices"].numpy())]
-        i+=len(body._mesh.triangle["indices"].numpy())
+        body.charges = charges[i:i+len(body.get_triangles())]
+        i+=len(body.get_triangles())
     del i
     
     #6.Visualize
-        #We create the colors in the bodies.
+    
+    #We create the colors in the bodies.
         #We then visualize all the bodies
     for body in bodies:
-        body.calculate_colors('point_charge')
-         
+        body.calculate_colors(charge_distribution_method, visualization_params['color_method'])
+        
     o3d.visualization.draw([body.mesh for body in bodies])
     
     
@@ -101,14 +125,16 @@ def run_simulation(simulation_params, settings_name):
     save_data(settings_name,simulation_params)
     
         
- 
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Run the simulation with adjustable parameters.")
-    parser.add_argument("--settings", type=str, default="settings_default", help="Name of the settings file to use.")
+    parser.add_argument("--settings", type=str, default="settings_default", help="Name of the simulation settings file to use.")
+    parser.add_argument("--visualization", type=str, default="settings_default", help="Name of the visualization settings file to use.")
     return parser.parse_args()
     
 if __name__ == "__main__":
     args = parse_arguments()
-    simulation_params = load_settings(args.settings)
-    run_simulation(simulation_params, args.settings)
+    simulation_params = load_simulation_settings(args.settings)
+    visualization_params = load_visualization_settings(args.visualization)
+    run_simulation(simulation_params, visualization_params, args.settings)
 

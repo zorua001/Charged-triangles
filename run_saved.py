@@ -20,25 +20,32 @@ Example:
 import argparse
 import open3d as o3d
 from config.load_save import load_save
+from config.settings_loader import load_visualization_settings
+from config.allowed_bodies import Body
 
 
-def run_simulation(simulation_params):
+def run_simulation(simulation_params, visualization_params):
     #Setup
     #Already done through loading the save
     print(f'Simulation parameters: {simulation_params}')
     
     #Visualize everything
-    #Probably need to calculate the colors here? as well as everything else that is relevant for visualization
-    o3d.visualization.draw([body.mesh for body in simulation_params['bodies']])
-    
+    #We create the colors in the bodies.
+        #We then visualize all the bodies
+    for body in simulation_params['bodies']:
+        body.calculate_colors(simulation_params['charge_distribution_method'], visualization_params['color_method'])
+        
+    o3d.visualization.draw([body.mesh for body in  simulation_params['bodies']])
  
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Run the results of a previous simulation.")
     parser.add_argument("--save", type=str, required=True, help="Name of the save file to use. The save files can be found under the saves directory")
+    parser.add_argument("--visualization", type=str, default="settings_default", help="Name of the visualization settings file to use.")
     return parser.parse_args()
     
 if __name__ == "__main__":
     args = parse_arguments()
     simulation_params = load_save(args.save)
-    run_simulation(simulation_params)
+    visualization_params = load_visualization_settings(args.visualization)
+    run_simulation(simulation_params, visualization_params)
 

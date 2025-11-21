@@ -84,30 +84,56 @@ class Body:
             t = [(h[0][j]+h[1][j]+h[2][j])/3 for j in range (3)]
             centroid[i] = t    
         return centroid
+    
+    def get_triple_points(self, w):
+        """Gives a list of three points per triangle offset from center by offset w"""
+        triangles = self.get_triangles()
+        vertices = self.get_vertices()
+        centroids = self.get_centroids()
+        triple_points = np.empty([3*len(centroids),3])
+        for i in range (len(triangles)):
+            h = np.asarray([vertices[int(triangles[i][0])],vertices[int(triangles[i][1])],vertices[int(triangles[i][2])]])
+            triple_points[3*i] = [(w*h[0][j]+h[1][j]+h[2][j])/(2+w) for j in range (3)]
+            triple_points[3*i+1] = [(h[0][j]+w*h[1][j]+h[2][j])/(2+w) for j in range (3)]
+            triple_points[3*i+2] = [(h[0][j]+h[1][j]+w*h[2][j])/(2+w) for j in range (3)]   
+        return triple_points
+
+    def get_triangles(self):
+        return self._mesh.triangle["indices"].numpy()
+
+    def get_vertices(self):
+        return self._mesh.vertex["positions"].numpy()
 
     def areas_of_triangles(self):
         """Calculates the areas of the triangles in the mesh"""
-        triangles = self._mesh.triangle["indices"].numpy()
-        vertices = self._mesh.vertex["positions"].numpy()
+        triangles = self.get_triangles()
+        vertices = self.get_vertices()
         surface = np.zeros(len(triangles))
         for i in range (len(triangles)):
             surface[i] = np.linalg.norm(np.cross(vertices[int(triangles[i][1])]-vertices[int(triangles[i][0])],vertices[int(triangles[i][2])]-vertices[int(triangles[i][0])]))
         return surface
     
     
-    def calculate_colors(self, method):
+    def calculate_colors(self, charge_method, color_method):
         """Calculates the colours on all the triangles"""
         """Currently only point charge method implemented"""
         areas = self.areas_of_triangles()
-        if(method=='point_charge'):
+        if(charge_method in ['point_charge', 'homogenous']):
             if len(self._charges) == len(areas):
                 charge_density = [charge / area for charge, area in zip(self._charges, areas)]
             else:
                 raise ValueError(f'Both lists must be of the same length. They are now {len(self._charges)} and {len(areas)}')            
-            self._mesh.triangle.colors = o3d.core.Tensor(get_color(charge_density),o3d.core.float32) 
+            if(color_method=='linear'):
+                self._mesh.triangle.colors = o3d.core.Tensor(get_color(charge_density),o3d.core.float32) 
+            elif(color_method=='log'):
+                values_array = np.array(charge_density)
+                charge_density_log = np.where(values_array >= 0, np.log(values_array), -np.log(np.abs(values_array)))
+                self._mesh.triangle.colors = o3d.core.Tensor(get_color(charge_density_log),o3d.core.float32) 
+            else:
+                raise ValueError(f'{color_method} is not a valid color_method in calculate_colours in Body. Try linear' )
             return
         else:
-            ValueError(f'{method} is not a valid method in calculate_colours in Body. Try point_charge')
+            ValueError(f'{charge_method} is not a valid charge_method in calculate_colours in Body. Try point_charge')
    
     
 
@@ -128,7 +154,7 @@ class Sphere:
         self.resolution = resolution
         
     def get_mesh(self):
-        return o3d.t.geometry.TriangleMesh.create_sphere
+        return o3d.t.geometry.TriangleMesh.create_sphere(self.radius,self.resolution)
 
 #Add more objects here!
 
