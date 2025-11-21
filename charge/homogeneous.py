@@ -54,16 +54,42 @@ def homogeneous (triange,point):
     c_prim = c ##Ingen aning vad c_prim är
     return (2*area(triange)/alpha)*(stora_j(a, a_prim, b, b_prim, c, c_prim, d, e, 1)-stora_j(a, a_prim, b, b_prim, c, c_prim, d, e, 0))
 
+def homogeneous_memo (triange,point,j):
+    if j in memory:
+        alpha = memory[j][0]
+        b_prim = memory[j][1]
+        n = memory[j][2]
+        d = memory[j][3]
+    else:     
+        alpha = np.linalg.norm(triange[0]-triange[2])
+        b_prim = np.dot((triange[0]-triange[2]),np.transpose(triange[1]-triange[2]))/(alpha**2)
+        q_t = abs(np.cross(triange[0]-triange[2],triange[1]-triange[2]))
+        q = sum([q_t[k]**2 for k in range (3)])**0.5
+        n = np.cross(triange[0]-triange[2],triange[1]-triange[2])/q
+        d = q/(alpha**2)
+        memory[j] = [alpha,b_prim,n,d]
+    a_prim = np.dot((triange[0]-triange[2]),np.transpose(triange[2]-point))/(alpha**2)
+    a = 1 + a_prim
+    b = b_prim -1
+    
+    c = np.dot(n, np.transpose(np.cross(triange[0]-triange[2],triange[2]-point)))/(alpha**2)
+   
+    e = abs(np.dot(n,np.transpose(triange[2]-point)))/alpha
+    c_prim = c ##Ingen aning vad c_prim är
+    return (2*area(triange)/alpha)*(stora_j(a, a_prim, b, b_prim, c, c_prim, d, e, 1)-stora_j(a, a_prim, b, b_prim, c, c_prim, d, e, 0))
+
 
 #Kopierade från Parallell_charges
 def charge(vertex_coordinates,points,potentia):
     print("hello")
     distance = np.zeros([len(vertex_coordinates),len(points)])
     for i in range (len(vertex_coordinates)):
-        k = functools.partial(homogeneous,vertex_coordinates[i])
+        k = functools.partial(homogeneous_memo,vertex_coordinates[i])
         with future.ThreadPoolExecutor() as executor:
             distance[i] = list(executor.map(k, points))
         print("k")
+    distance[np.isnan(distance)] = 0
+    distance[np.isinf(distance)] = 0
     potentia = np.ones(len(points))*potentia
     print("hej")
     t = np.linalg.lstsq(distance.astype('float') , potentia.astype('float'),rcond=-1)[0]
@@ -74,8 +100,10 @@ def charge_2(vertex_coordinates,points,potentia):
     distance = np.zeros([len(vertex_coordinates),len(points)])
     for j in range(len(vertex_coordinates)):
         for i in range(len(points)):
-            distance[j,i] = homogeneous(vertex_coordinates[j], points[i])
+            distance[j,i] = homogeneous_memo(vertex_coordinates[j], points[i])
         print("k")
+    distance[np.isnan(distance)] = 0
+    distance[np.isinf(distance)] = 0
     potentia = np.ones(len(points))*potentia
     print("hej")
     t = np.linalg.lstsq(distance.astype('float') , potentia.astype('float'),rcond=-1)[0]
