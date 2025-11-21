@@ -28,6 +28,7 @@ def run_simulation(simulation_params):
     print(f'Simulation parameters: {simulation_params}')
     
     #Visualize everything
+    #Probably need to calculate the colors here? as well as everything else that is relevant for visualization
     o3d.visualization.draw([body.mesh for body in simulation_params['bodies']])
     
  

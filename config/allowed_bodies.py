@@ -19,7 +19,7 @@ import numpy as np
 import copy
 
 class Body:
-    def __init__(self, shape_type,pos= [0,0,0],rot=[0,0,0], **kwargs):
+    def __init__(self, shape_type,potential,pos= [0,0,0],rot=[0,0,0], **kwargs):
         self.shape_type = shape_type.lower()
         self.pos = pos
         self.rot = rot
@@ -30,6 +30,9 @@ class Body:
         else:
             raise ValueError("Invalid shape type provided.")
         
+        if not isinstance(potential, float):
+            #Check that potential is a float
+            raise ValueError("potential must be a float")
         if not (isinstance(pos, list) and len(pos) == 3 and all(isinstance(item, (int, float)) for item in pos)):
             # Check if all elements are either integers or floats
             raise ValueError("In Body the pos (the position) needs to be a list of length 3 with only floats or integers")
@@ -42,6 +45,7 @@ class Body:
         meshTemp= self.shape.get_mesh().translate(self.pos)
         #The rot parameter rotates the object around its center in xyz directions (radians)
         self._mesh = meshTemp.rotate(o3d.core.Tensor(create_rotation_matrix(self.rot).astype(np.float64)), o3d.core.Tensor(np.array(self.pos).astype(np.float64)))
+        self._potential = potential #Currently the potential is constant in the object
         self._charges = None #We originally have no charges in the body
         
     def __str__(self):
@@ -53,7 +57,11 @@ class Body:
         """Getter method for the mesh."""
         return self._mesh
     
-        
+    @property
+    def potential(self):
+        """Getter method for the potential."""
+        return self._potential
+    
     @property
     def charges(self):
         """Get the charges."""
