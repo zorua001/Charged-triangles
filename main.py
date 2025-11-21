@@ -5,25 +5,26 @@ Created on Tue Nov 18 10:20:00 2025
 This is the main file where everything is controlled.
 
 To run a simulation enter the console in this directory and run this script. 
-If you want specific settings add them after the file.
+If you want specific settings for the simulation or visualization add them after the file.
 
 example:
     cd C:/Users/Name/triangles_and_spacecraft #bc unicode had to use wrong direction on /
     python main.py #Uses default settings
     python main.py --settings=my_settings #Uses the file my_settings which you have created
-
+    python main.py --settings=my_settings --visualization=my_vis #Uses visualization settings my_vis as well
 @author: Hampus Berndt
 """
 import open3d as o3d
 import argparse
-from config.settings_loader import load_settings
+from config.settings_loader import load_simulation_settings
+from config.settings_loader import load_visualization_settings
 import numpy as np
 from charge.calculate_charge import calculate_charge
 from config.save_data import save_data
 
 
 
-def run_simulation(simulation_params, settings_name):
+def run_simulation(simulation_params, visualization_params, settings_name):
     #1. Specify the bodies
         #Done in the setup file with the parameter 'bodies' where you can add
         #whichever setup you want as long as it is composed of the supported 
@@ -110,11 +111,12 @@ def run_simulation(simulation_params, settings_name):
     del i
     
     #6.Visualize
-        #We create the colors in the bodies.
+    
+    #We create the colors in the bodies.
         #We then visualize all the bodies
     for body in bodies:
-        body.calculate_colors('point_charge')
-         
+        body.calculate_colors(charge_distribution_method, visualization_params['color_method'])
+        
     o3d.visualization.draw([body.mesh for body in bodies])
     
     
@@ -123,14 +125,16 @@ def run_simulation(simulation_params, settings_name):
     save_data(settings_name,simulation_params)
     
         
- 
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Run the simulation with adjustable parameters.")
-    parser.add_argument("--settings", type=str, default="settings_default", help="Name of the settings file to use.")
+    parser.add_argument("--settings", type=str, default="settings_default", help="Name of the simulation settings file to use.")
+    parser.add_argument("--visualization", type=str, default="settings_default", help="Name of the visualization settings file to use.")
     return parser.parse_args()
     
 if __name__ == "__main__":
     args = parse_arguments()
-    simulation_params = load_settings(args.settings)
-    run_simulation(simulation_params, args.settings)
+    simulation_params = load_simulation_settings(args.settings)
+    visualization_params = load_visualization_settings(args.visualization)
+    run_simulation(simulation_params, visualization_params, args.settings)
 
