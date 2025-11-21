@@ -37,11 +37,20 @@ def validate_settings(settings):
             raise ValueError(f"Missing required setting: '{key}'")
 
     if not isinstance(settings['charge_distribution_method'], str) and settings['charge_distribution_method'] in ['point_charge', 'korean', 'homogenous']:
-        raise ValueError("charge_distribution_method must be one of point_charge, korean, homogenous")
+        raise ValueError("charge_distribution_method must be one of point_charge and homogenous")
     
-    if not isinstance(settings['field_point_method'], str) and settings['field_point_method'] in ['centroid']:
-        raise ValueError("charge_distribution_method must be one of centroid")
-        
+    if not isinstance(settings['field_point_method'], str) and settings['field_point_method'] in ['centroid', 'triple']:
+        raise ValueError("charge_distribution_method must be one of centroid or triple")
+       
+        # Check for the optional 'offset' parameter when 'field_point_method' is 'triple'
+    if settings['field_point_method'] == 'triple':
+        if 'offset' not in settings:
+            raise ValueError("Missing required setting: 'offset' when 'field_point_method' is 'triple'")
+        # Offset must be single float between 0 and 1
+        if not isinstance(settings['offset'], (int, float)):
+            raise ValueError("offset must be a single number.")
+        if not (0 < settings['offset'] < 1):
+            raise ValueError("offset must be between 0 and 1.")
         
     if not isinstance(settings['bodies'], list):
         raise ValueError("Expected 'bodies' to be a list.")

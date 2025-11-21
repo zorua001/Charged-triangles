@@ -84,11 +84,30 @@ class Body:
             t = [(h[0][j]+h[1][j]+h[2][j])/3 for j in range (3)]
             centroid[i] = t    
         return centroid
+    
+    def get_triple_points(self, w):
+        """Gives a list of three points per triangle offset from center by offset w"""
+        triangles = self.get_triangles()
+        vertices = self.get_vertices()
+        centroids = self.get_centroids()
+        triple_points = np.empty([3*len(centroids),3])
+        for i in range (len(triangles)):
+            h = np.asarray([vertices[int(triangles[i][0])],vertices[int(triangles[i][1])],vertices[int(triangles[i][2])]])
+            triple_points[3*i] = [(w*h[0][j]+h[1][j]+h[2][j])/(2+w) for j in range (3)]
+            triple_points[3*i+1] = [(h[0][j]+w*h[1][j]+h[2][j])/(2+w) for j in range (3)]
+            triple_points[3*i+2] = [(h[0][j]+h[1][j]+w*h[2][j])/(2+w) for j in range (3)]   
+        return triple_points
+
+    def get_triangles(self):
+        return self._mesh.triangle["indices"].numpy()
+
+    def get_vertices(self):
+        return self._mesh.vertex["positions"].numpy()
 
     def areas_of_triangles(self):
         """Calculates the areas of the triangles in the mesh"""
-        triangles = self._mesh.triangle["indices"].numpy()
-        vertices = self._mesh.vertex["positions"].numpy()
+        triangles = self.get_triangles()
+        vertices = self.get_vertices()
         surface = np.zeros(len(triangles))
         for i in range (len(triangles)):
             surface[i] = np.linalg.norm(np.cross(vertices[int(triangles[i][1])]-vertices[int(triangles[i][0])],vertices[int(triangles[i][2])]-vertices[int(triangles[i][0])]))
@@ -128,7 +147,7 @@ class Sphere:
         self.resolution = resolution
         
     def get_mesh(self):
-        return o3d.t.geometry.TriangleMesh.create_sphere
+        return o3d.t.geometry.TriangleMesh.create_sphere(self.radius,self.resolution)
 
 #Add more objects here!
 

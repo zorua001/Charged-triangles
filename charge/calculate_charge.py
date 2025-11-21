@@ -6,7 +6,7 @@ Created on Thu Nov 20 13:58:20 2025
 """
 
 import numpy as np
-from charge.homogeneous import homogeneous
+from charge.homogeneous import homogeneous_memo
 
 
 def calculate_charge(method,charge_information,field_points,field_point_potentials):
@@ -24,13 +24,10 @@ def calculate_charge(method,charge_information,field_points,field_point_potentia
         ##corresponding to that point charge
         for j in range(len(charge_information)):
             for i in range(len(field_points)):
-                coefficients[i,j] = homogeneous(charge_information[j], field_points[i])
+                coefficients[i,j] = homogeneous_memo(charge_information[j], field_points[i],j)
     else:
         ValueError("Method in calculate_charge must be an allowed method")        
     
     coefficients[np.isnan(coefficients)] = 0
     coefficients[np.isinf(coefficients)] = 0
-    print(len(field_points))
-    print(len(field_point_potentials))
-    print(len(coefficients))
     return np.linalg.lstsq(coefficients.astype('float') , field_point_potentials,rcond=-1)[0]

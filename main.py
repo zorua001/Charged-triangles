@@ -53,6 +53,19 @@ def run_simulation(simulation_params, settings_name):
     
     if charge_distribution_method == 'point_charge':
         charge_information = centroids
+    elif(charge_distribution_method=='homogenous'):
+         triangles = []
+         vertices = []
+         for body in bodies:
+             # Get the centroids, which is a 2D array
+             s_triangles = body.get_triangles()
+             s_vertices = body.get_vertices()
+             triangles.append(s_triangles)
+             vertices.append(s_vertices) 
+         triangles = np.vstack(triangles) if triangles else np.array([])
+         vertices = np.vstack(vertices) if vertices else np.array([])
+             
+         charge_information = np.array([[vertices[int(triangles[i][0])],vertices[int(triangles[i][1])],vertices[int(triangles[i][2])]] for i in range (len(triangles))])
     else:
         ValueError('We need an allowed charge_calculation_method')
 
@@ -66,7 +79,18 @@ def run_simulation(simulation_params, settings_name):
         field_points = centroids
         field_point_potentials = np.empty(0)
         for body in bodies:
-            field_point_potentials=np.concatenate((field_point_potentials,np.full(len(body._mesh.triangle["indices"].numpy()), body.potential)))
+            field_point_potentials=np.concatenate((field_point_potentials,np.full(len(body.get_triangles()), body.potential)))
+    elif field_point_method == 'triple':
+        field_points = [] 
+        for body in bodies:
+            s_field_points = body.get_triple_points(simulation_params['offset'])
+            field_points.append(s_field_points) 
+        
+        field_points = np.vstack(field_points) if field_points else np.array([])  # Combine all into one array if not empty
+        field_point_potentials = np.empty(0)
+        for body in bodies:
+            field_point_potentials=np.concatenate((field_point_potentials,np.full(len(body.get_triangles())*3, body.potential)))
+    
     else:
         ValueError('We need an allowed field_point_method')
     
@@ -77,14 +101,12 @@ def run_simulation(simulation_params, settings_name):
         #The charges are then put out to the bodies in the order and length 
         #that centroid were put in
         #This method relies on bodies being ordered (such as a list)
-    #charges = pc.charge(centroids, centroids, potential)
-    if(simulation_params['charge_distribution_method']=='point_charge'):    
-        charges = calculate_charge('point_charge', charge_information,field_points,field_point_potentials)
-    
+    charges = calculate_charge(charge_distribution_method, charge_information, field_points, field_point_potentials)
+
     i = 0
     for body in bodies:
-        body.charges = charges[i:i+len(body._mesh.triangle["indices"].numpy())]
-        i+=len(body._mesh.triangle["indices"].numpy())
+        body.charges = charges[i:i+len(body.get_triangles())]
+        i+=len(body.get_triangles())
     del i
     
     #6.Visualize
