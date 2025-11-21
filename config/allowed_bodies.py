@@ -113,6 +113,11 @@ class Body:
             surface[i] = np.linalg.norm(np.cross(vertices[int(triangles[i][1])]-vertices[int(triangles[i][0])],vertices[int(triangles[i][2])]-vertices[int(triangles[i][0])]))
         return surface
     
+    def get_triangle_vertices(self):
+        triangles = self.get_triangles()
+        vertices = self.get_vertices()
+        temp = np.array([[vertices[int(triangles[i][0])],vertices[int(triangles[i][1])],vertices[int(triangles[i][2])]] for i in range (len(triangles))])
+        return temp
     
     def calculate_colors(self, charge_method, color_method):
         """Calculates the colours on all the triangles"""

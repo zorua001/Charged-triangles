@@ -2,9 +2,9 @@
 """
 Created on Fri Nov 21 13:15:51 2025
 
-This is an example of a settings file. It is recommended when creating new
-settings to copy this file and then make changes. See settings_loader for exact
-definitions on which settings are allowed.
+This is an example of a settings file for the visualization. It is recommended 
+when creating new settings to copy this file and then make changes. 
+See settings_loader for exact definitions on which settings are allowed.
 
 @author: Hampus Berndt
 """
