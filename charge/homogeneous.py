@@ -15,6 +15,8 @@ def stora_p (a,b,c,d,e,n):
 def stora_q (a,b,c,d,e,n):
     t = d*e*((a*d-b*c)*(c+d*n)-b*e**2)
     x =(abs(e*d)*np.sqrt((a+b*n)**2+(c+d*n)**2+e**2))/np.sqrt(((c+d*n)**2+e**2)*((a*d-b*c)**2+(e**2)*(b**2+d**2)))
+    if np.isnan(x):
+        x = 0
     if abs(x) <= 1:
         number = np.arccos(x)
     else: 
@@ -97,10 +99,10 @@ def charge(vertex_coordinates,points,potentia):
 
 def charge_2(vertex_coordinates,points,potentia):
     print("hello")
-    distance = np.zeros([len(vertex_coordinates),len(points)])
+    distance = np.zeros([len(points),len(vertex_coordinates)])
     for j in range(len(vertex_coordinates)):
         for i in range(len(points)):
-            distance[j,i] = homogeneous_memo(vertex_coordinates[j], points[i])
+            distance[i,j] = homogeneous_memo(vertex_coordinates[j], points[i],j)
         print("k")
     distance[np.isnan(distance)] = 0
     distance[np.isinf(distance)] = 0
