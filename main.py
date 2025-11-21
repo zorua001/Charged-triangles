@@ -81,8 +81,6 @@ def run_simulation(simulation_params, settings_name):
     if(simulation_params['charge_distribution_method']=='point_charge'):    
         charges = calculate_charge('point_charge', charge_information,field_points,field_point_potentials)
     
-    
-    
     i = 0
     for body in bodies:
         body.charges = charges[i:i+len(body._mesh.triangle["indices"].numpy())]
