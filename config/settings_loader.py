@@ -19,7 +19,7 @@ from config.allowed_bodies import Body
 #Loads the settingsfile requested
 def load_simulation_settings(settings_file):
     try:
-        module = importlib.import_module(f'settings.simulation.{settings_file}.py')
+        module = importlib.import_module(f'settings.simulation.{settings_file}')
         print("k")
         settings = module.SIMULATION_PARAMS
         validate_settings_simulation(settings)  # Validate settings before returning
@@ -29,7 +29,7 @@ def load_simulation_settings(settings_file):
 
 def load_visualization_settings(settings_file):
     try:
-        module = importlib.import_module(f'settings.visualization.{settings_file}.py')
+        module = importlib.import_module(f'settings.visualization.{settings_file}')
         settings = module.VISUALIZATION_PARAMS
         validate_settings_visualization(settings)  # Validate settings before returning
         return settings
