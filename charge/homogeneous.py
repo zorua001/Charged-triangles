@@ -86,8 +86,8 @@ def charge(vertex_coordinates,points,potentia):
     print("hello")
     distance = np.zeros([len(vertex_coordinates),len(points)])
     for i in range (len(vertex_coordinates)):
-        k = functools.partial(homogeneous_memo,vertex_coordinates[i])
-        with future.ThreadPoolExecutor() as executor:
+        k = functools.partial(homogeneous,vertex_coordinates[i])
+        with future.ThreadPoolExecutor(12) as executor:
             distance[i] = list(executor.map(k, points))
         print("k")
     distance[np.isnan(distance)] = 0
@@ -113,8 +113,8 @@ def charge_2(vertex_coordinates,points,potentia):
 
 
 memory = {}
-#n = homogeneous(np.array([[1,0,0],[0.5,0.867,0],[0,0,0]]), np.array([0.5,0.289,0.5]))
-#m = homogeneous(np.array([[0,0,0],[1,0,0], [0.25,1,0]]), np.array([2,0,2]))
+n = homogeneous(np.array([[1,0,0],[0.5,0.867,0],[0,0,0]]), np.array([0.5,0.289,0.5]))
+m = homogeneous(np.array([[0,0,0],[1,0,0], [0.25,1,0]]), np.array([2,0,2]))
 
-#print(n)
+print(n)
 #print(m)

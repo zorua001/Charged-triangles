@@ -27,20 +27,20 @@ def homogen (center,triangle,vertice):
     return färg_2
 
 #beräknar laddning på punktladdning
-def point_ch(centroid,extended,vertice,triangle,decision):
-    surface = area(vertice, triangle)
+def point_ch(centroid,extended,triangle,decision):
+    surface = area_tri(triangle)
     if decision:
         k = ch.charge(centroid, extended, -5)
     else:
         k = ch.charge(centroid,centroid,-5)
-    print(len(k))
+    print(k)
+    print(sum(k))
     for i in range(len(k)):
         if k[i] >= 0: 
             k[i] =  np.log(k[i]/surface[i])
         else:
             k[i] = -np.log(abs(k[i])/surface[i])
     k = k/max(abs(k))
-    print(k)
     färg = np.array([[i,1-i,0] for i in k])
     return färg    
 
@@ -48,8 +48,13 @@ def point_ch(centroid,extended,vertice,triangle,decision):
 def homogeneous_ch(centroid,triangles):
     surface = area_tri(triangles)
     k = hct.charge_2(triangles, centroid, 5)
+    print(sum(k))
    
-    k = k/surface
+    for i in range(len(k)):
+        if k[i] >= 0: 
+            k[i] =  np.log(k[i])
+        else:
+            k[i] = -np.log(abs(k[i]))
     k = k/max(abs(k))
     färg = np.array([[0.5+0.5*i,0.5-0.5*i,0] for i in k])
     return färg    
@@ -104,7 +109,11 @@ def get_triangles(vertice, triangle):
     t = np.array([[vertice[int(triangle[i][0])],vertice[int(triangle[i][1])],vertice[int(triangle[i][2])]] for i in range (len(triangle))])
     return t
 ##Kanske ändra till o3d.t 
-mesh = o3d.t.geometry.TriangleMesh.create_cylinder(1,3,10,20)
+mesh = o3d.t.geometry.TriangleMesh.create_cylinder(1,3,20,20)
+
+
+
+
 #print(mesh.vertex["positions"].numpy())
 
 mesh2 = o3d.t.geometry.TriangleMesh.create_sphere(.5,10)
@@ -125,9 +134,10 @@ decision = 1
 
 
 t = time.time()
-#färg = point_ch(tot,tot_c,tot_a,tot_b,decision)
+#färg = point_ch(tot,tot_c,tot_a,decision)
+#färg = homogeneous_ch(center_2, triangles_2)
 
-färg_2 = homogeneous_ch(tot_c,tot_a)
+färg_2 = homogeneous_ch(tot,tot_a)
 s = time.time()
 print(s-t)
 mesh.triangle.colors = o3d.core.Tensor(färg_2[:len(center)],o3d.core.float32)
@@ -138,4 +148,4 @@ more_points(np.array([[1,2,3]]))
 mesh2.triangle.colors = o3d.core.Tensor(färg_2[len(center):],o3d.core.float32)
 mesh2.compute_vertex_normals()
 
-o3d.visualization.draw([mesh, mesh2])
+o3d.visualization.draw([mesh,mesh2])
