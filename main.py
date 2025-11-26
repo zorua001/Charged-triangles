@@ -69,8 +69,7 @@ def run_simulation(simulation_params, visualization_params, settings_name):
     #4. Specify the potentials in some points.
         #Currently each body has a potential from settings
         #Currently using the centroids as field points
-        #todo: add that you can overdetermine the system
-        #todo: change what fieldpoints we have
+
     field_point_method = simulation_params['field_point_method']
     if field_point_method == 'centroid':
         field_points = centroids
@@ -94,7 +93,6 @@ def run_simulation(simulation_params, visualization_params, settings_name):
     
     
     #5 We calculate the charges 
-        #currently done using point charges
         #The charges are then put out to the bodies in the order and length 
         #that centroid were put in
         #This method relies on bodies being ordered (such as a list)

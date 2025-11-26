@@ -11,6 +11,7 @@ which is used later in the program.
 Some other useful methods are also here that can be used in other files. 
 Currently:
     -get_centroids
+    -get_triangle_vertices
 
 @author: Hampus Berndt
 """
