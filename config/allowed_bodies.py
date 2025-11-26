@@ -120,7 +120,10 @@ class Body:
         areas = self.areas_of_triangles()
         if(charge_method in ['point_charge', 'homogenous']):
             if len(self._charges) == len(areas):
-                charge_density = [charge / area for charge, area in zip(self._charges, areas)]
+                if charge_method == 'point_charge':
+                    charge_density = [charge / area for charge, area in zip(self._charges, areas)]
+                else:
+                   charge_density = self._charges 
             else:
                 raise ValueError(f'Both lists must be of the same length. They are now {len(self._charges)} and {len(areas)}')            
             if(color_method=='linear'):
@@ -155,6 +158,20 @@ class Sphere:
         
     def get_mesh(self):
         return o3d.t.geometry.TriangleMesh.create_sphere(self.radius,self.resolution)
+    
+class Box:
+    def __init__(self,height,width,depth,iterations):
+        self.height = height
+        self.width = width
+        self.depth = depth
+        ##gör om till resolution
+        self.iterations = iterations
+        
+    def get_mesh(self):
+        mesh = o3d.geometry.TriangleMesh.create_box(self.height,self.width,self.depth)
+        mesh = mesh.subdivide_midpoints(number_of_iterations= self.iterations)
+        mesh = o3d.t.geometry.TriangleMesh.from_legacy(mesh)
+        return mesh
 
 #Add more objects here!
 

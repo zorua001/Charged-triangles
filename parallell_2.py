@@ -6,6 +6,7 @@ Created on Tue Nov 18 13:10:10 2025
 """
 
 import numpy as np
+import time
 import concurrent.futures as future
 import functools
 
@@ -16,6 +17,7 @@ def beräkning (charge_coordinate,point):
     return korta
 
 def charge(charge_coordinates,points,potentia):
+    t = time.time()
     result = np.zeros((len(points),len(charge_coordinates)))
     for j in range(len(charge_coordinates)):
         for i in range(len(points)):
@@ -24,6 +26,8 @@ def charge(charge_coordinates,points,potentia):
     result[np.isnan(result)] = 0
     result[np.isinf(result)] = 0
     potentia = np.ones(len(points))*potentia        
+    s = time.time()
+    print(s-t)
     return np.linalg.lstsq(result.astype('float') , potentia.astype('float'),rcond=-1)[0]
 
 charge_coordinates = np.asarray([[1,5,7],[3,6,0],[2,3,2],[4,5,4]])
