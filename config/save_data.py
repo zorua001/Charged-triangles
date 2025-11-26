@@ -14,6 +14,7 @@ We also save the current version of the code so that we can redo experiments
 import pickle
 import os
 import config.get_git_version as get_git_version
+import dill
 
 #Because setting_params holds bodies we only need to save setting params and 
 #can then run 
@@ -28,7 +29,8 @@ def save_data(simulation_name, setting_params):
 
     # Save the result
     with open(unique_filename, 'wb') as file:
-        pickle.dump(simulation_result, file)
+        #pickle.dump(simulation_result, file)
+        dill.dump(simulation_result, file)
 
     print(f"Saved simulation results to {unique_filename}")
     

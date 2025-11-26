@@ -52,7 +52,15 @@ class Body:
     def __str__(self):
         """Return a string representation of the body."""
         return f"{self.shape_type} with position {self.pos}, rotation {self.rot} and other parameters"
+    
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        # Remove any non-picklable items here
+        return state
 
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+    
     @property
     def mesh(self):
         """Getter method for the mesh."""

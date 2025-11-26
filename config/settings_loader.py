@@ -12,7 +12,6 @@ To change the setup, create a new settings file and run that one instead
 @author: Hampus Berndt
 """
 
-
 import importlib
 from config.allowed_bodies import Body
 
@@ -20,7 +19,6 @@ from config.allowed_bodies import Body
 def load_simulation_settings(settings_file):
     try:
         module = importlib.import_module(f'settings.simulation.{settings_file}')
-        print("k")
         settings = module.SIMULATION_PARAMS
         validate_settings_simulation(settings)  # Validate settings before returning
         return settings
