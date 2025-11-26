@@ -55,18 +55,14 @@ def run_simulation(simulation_params, visualization_params, settings_name):
     if charge_distribution_method == 'point_charge':
         charge_information = centroids
     elif(charge_distribution_method=='homogenous'):
-         triangles = []
-         vertices = []
+         charge_information = []
          for body in bodies:
              # Get the centroids, which is a 2D array
-             s_triangles = body.get_triangles()
-             s_vertices = body.get_vertices()
-             triangles.append(s_triangles)
-             vertices.append(s_vertices) 
-         triangles = np.vstack(triangles) if triangles else np.array([])
-         vertices = np.vstack(vertices) if vertices else np.array([])
-             
-         charge_information = np.array([[vertices[int(triangles[i][0])],vertices[int(triangles[i][1])],vertices[int(triangles[i][2])]] for i in range (len(triangles))])
+             s_triangle_vertices = body.get_triangle_vertices()
+        
+             charge_information.append(s_triangle_vertices) 
+         charge_information.np.vstack((charge_information) if charge_information else np.array([]))
+        
     else:
         ValueError('We need an allowed charge_calculation_method')
 
