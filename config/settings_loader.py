@@ -25,7 +25,7 @@ def load_simulation_settings(settings_file):
         validate_settings_simulation(settings)  # Validate settings before returning
         return settings
     except ImportError:
-        raise ValueError(f"Simuation setting file '{settings_file}.py' not found.")
+        raise ValueError(f"Simulation setting file '{settings_file}.py' not found.")
 
 def load_visualization_settings(settings_file):
     try:
@@ -34,7 +34,7 @@ def load_visualization_settings(settings_file):
         validate_settings_visualization(settings)  # Validate settings before returning
         return settings
     except ImportError:
-        raise ValueError(f"Visuaization setting file '{settings_file}.py' not found.")
+        raise ValueError(f"Visualization setting file '{settings_file}.py' not found.")
 
 #Validates the settings for the simulation, making sure that they are allowed
 #Important to update the validator when adding a new setting or parameter
