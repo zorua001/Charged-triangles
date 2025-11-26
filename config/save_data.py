@@ -11,7 +11,6 @@ We also save the current version of the code so that we can redo experiments
 @author: Hampus Berndt
 """
 
-import pickle
 import os
 import config.get_git_version as get_git_version
 import dill
