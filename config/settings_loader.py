@@ -12,7 +12,6 @@ To change the setup, create a new settings file and run that one instead
 @author: Hampus Berndt
 """
 
-
 import importlib
 from config.allowed_bodies import Body
 from config.point_potential import Point_potential

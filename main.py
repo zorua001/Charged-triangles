@@ -4,7 +4,7 @@ Created on Tue Nov 18 10:20:00 2025
 
 This is the main file where everything is controlled.
 
-To run a simulation enter the console in this directory and run this script. 
+To run a simulation enter the console in this directory and run the script under example. 
 If you want specific settings for the simulation or visualization add them after the file.
 
 example:
@@ -12,6 +12,7 @@ example:
     python main.py #Uses default settings
     python main.py --settings=my_settings #Uses the file my_settings which you have created
     python main.py --settings=my_settings --visualization=my_vis #Uses visualization settings my_vis as well
+
 @author: Hampus Berndt
 """
 import open3d as o3d
@@ -21,7 +22,6 @@ from config.settings_loader import load_visualization_settings
 import numpy as np
 from charge.calculate_charge import calculate_charge
 from config.save_data import save_data
-
 
 
 def run_simulation(simulation_params, visualization_params, settings_name):
@@ -99,8 +99,6 @@ def run_simulation(simulation_params, visualization_params, settings_name):
             for i in range(len(field_points)):
                 if np.linalg.norm(field_points[i]-point_potential[j].coordinate) <= point_potential[j].radius:
                     field_point_potentials[i] = point_potential[j].potential
-    
-    
     
     
     #5 We calculate the charges 

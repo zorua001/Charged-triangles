@@ -6,7 +6,7 @@ Loads a saved simulation result
 @author: Hampus Berndt
 """
 
-import pickle
+import dill
 import os
 import config.get_git_version as get_git_version
 
@@ -22,7 +22,7 @@ def load_save(save_name):
        exit(1)
     
     with open(filename, 'rb') as file:
-        loaded_save = pickle.load(file)
+        loaded_save = dill.load(file)
     
     current_code_version = get_git_version
     
