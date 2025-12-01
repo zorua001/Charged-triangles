@@ -46,8 +46,7 @@ def point_ch(centroid,extended,triangle,decision):
 
 #Beräknar laddning utifrån homogen fördelning
 def homogeneous_ch(centroid,triangles):
-    surface = area_tri(triangles)
-    k = hct.charge_2(triangles, centroid, 5)
+    k = hct.charge_2(triangles, centroid, 5,'cylinder+sphere')
     print(sum(k))
    
     for i in range(len(k)):
@@ -109,14 +108,14 @@ def get_triangles(vertice, triangle):
     t = np.array([[vertice[int(triangle[i][0])],vertice[int(triangle[i][1])],vertice[int(triangle[i][2])]] for i in range (len(triangle))])
     return t
 ##Kanske ändra till o3d.t 
-mesh = o3d.t.geometry.TriangleMesh.create_cylinder(1,3,20,20)
+mesh = o3d.t.geometry.TriangleMesh.create_cylinder(1,3,20,40)
 
 
 
 
 #print(mesh.vertex["positions"].numpy())
 
-mesh2 = o3d.t.geometry.TriangleMesh.create_sphere(.5,10)
+mesh2 = o3d.t.geometry.TriangleMesh.create_sphere(.5,20)
 mesh2 = mesh2.translate(o3d.core.Tensor([1.2,1.2,0]))
 
 
@@ -134,18 +133,19 @@ decision = 1
 
 
 t = time.time()
-#färg = point_ch(tot,tot_c,tot_a,decision)
-#färg = homogeneous_ch(center_2, triangles_2)
+färg = point_ch(tot,tot_c,tot_a,decision)
+#färg = homogeneous_ch(tot, tot_a)
 
-färg_2 = homogeneous_ch(tot,tot_a)
+#färg_2 = homogeneous_ch(tot,tot_a)
 s = time.time()
 print(s-t)
-mesh.triangle.colors = o3d.core.Tensor(färg_2[:len(center)],o3d.core.float32)
+print(len(tot))
+mesh.triangle.colors = o3d.core.Tensor(färg[:len(center)],o3d.core.float32)
 mesh.compute_vertex_normals()
 
 more_points(np.array([[1,2,3]]))
 
-mesh2.triangle.colors = o3d.core.Tensor(färg_2[len(center):],o3d.core.float32)
+mesh2.triangle.colors = o3d.core.Tensor(färg[len(center):],o3d.core.float32)
 mesh2.compute_vertex_normals()
 
 o3d.visualization.draw([mesh,mesh2])

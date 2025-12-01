@@ -9,7 +9,8 @@ SIMULATION_PARAMS = {
     'offset':float(0.5),
     #Which geometric bodies exist in this setup (see file allowed_bodies)
     'bodies': ([
-        Body('cylinder', float(5), pos=[.5,.5,-1.5],rot=[0,0,0], radius=0.5, height=5,length_resolution=20, height_resolution=20),
-        Body('box', float(5) ,pos = [0,0,0],rot =[0,0,0], height=3 , width = 3, depth = 3, iterations = 4 )
+        Body('cylinder', float(5), pos=[.25,.25,-1.5],rot=[0,0,0], radius=0.25, height=5,length_resolution=20, height_resolution=20),
+        Body('box', float(5) ,pos = [0,0,0],rot =[0,0,0], height=3 , width = 3, depth = 3, iterations = 4 ),
+        Body('cylinder', float(5), pos=[2.75,.25,-1.5],rot=[0,0,0], radius=0.25, height=5,length_resolution=20, height_resolution=20)
         ])
 }

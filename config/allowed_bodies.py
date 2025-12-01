@@ -28,6 +28,8 @@ class Body:
             self.shape = Cylinder(kwargs.get('radius',1), kwargs.get('height',5), kwargs.get('radius_resolution',10), kwargs.get('height_resolution',20))
         elif self.shape_type=='sphere':
             self.shape = Sphere(kwargs.get('radius',1), kwargs.get('resolution',20))
+        elif self.shape_type=='box':
+            self.shape = Box(kwargs.get('height',1),kwargs.get('width',1),kwargs.get('depth',1),kwargs.get('iterations',3))
         else:
             raise ValueError("Invalid shape type provided.")
         
@@ -175,7 +177,7 @@ class Box:
         
     def get_mesh(self):
         mesh = o3d.geometry.TriangleMesh.create_box(self.height,self.width,self.depth)
-        mesh = mesh.subdivide_midpoints(number_of_iterations= self.iterations)
+        mesh = mesh.subdivide_midpoint(number_of_iterations= self.iterations)
         mesh = o3d.t.geometry.TriangleMesh.from_legacy(mesh)
         return mesh
 

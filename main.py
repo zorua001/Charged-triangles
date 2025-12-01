@@ -71,6 +71,7 @@ def run_simulation(simulation_params, visualization_params, settings_name):
         #Currently using the centroids as field points
 
     field_point_method = simulation_params['field_point_method']
+   
     if field_point_method == 'centroid':
         field_points = centroids
         field_point_potentials = np.empty(0)
@@ -89,6 +90,16 @@ def run_simulation(simulation_params, visualization_params, settings_name):
     
     else:
         ValueError('We need an allowed field_point_method')
+        
+    ## Sätter potentialen i punkter nära point_potential till potentialen från point_potential
+    ## Sätter just nu in sista potentialen, vilket också 
+    if simulation_params['point_potential']:
+        point_potential = simulation_params['point_potential']
+        for j in range(len(point_potential)): 
+            for i in range(len(field_points)):
+                if np.linalg.norm(field_points[i]-point_potential[j].coordinate) <= point_potential[j].radius:
+                    field_point_potentials[i] = point_potential[j].potential
+    
     
     
     
@@ -97,6 +108,11 @@ def run_simulation(simulation_params, visualization_params, settings_name):
         #that centroid were put in
         #This method relies on bodies being ordered (such as a list)
     charges = calculate_charge(charge_distribution_method, charge_information, field_points, field_point_potentials)
+
+    ## Skriv ut högsta, lägsta och summan av laddningarna
+    print(f'Highest charge: {max(charges)}')
+    print(f'Lowest charge: {min(charges)}')
+    print(f'Total charge: {sum(charges)}')
 
     i = 0
     for body in bodies:

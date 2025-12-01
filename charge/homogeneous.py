@@ -8,6 +8,7 @@ Created on Wed Nov  5 13:44:27 2025
 import numpy as np
 import functools
 import concurrent.futures as future
+import os
 
 def stora_p (a,b,c,d,e,n):
     return 2*np.log((b**2+d**2)*n+a*b+c*d+np.sqrt(((b**2+d**2)*n+a*b+c*d)**2+(a*d-b*c)**2+e**2*(b**2+d**2)))
@@ -97,15 +98,23 @@ def charge(vertex_coordinates,points,potentia):
     t = np.linalg.lstsq(distance.astype('float') , potentia.astype('float'),rcond=-1)[0]
     return t
 
-def charge_2(vertex_coordinates,points,potentia):
+def charge_2(vertex_coordinates,points,potentia,name):
     print("hello")
-    distance = np.zeros([len(points),len(vertex_coordinates)])
-    for j in range(len(vertex_coordinates)):
-        for i in range(len(points)):
-            distance[i,j] = homogeneous_memo(vertex_coordinates[j], points[i],j)
-        print("k")
-    distance[np.isnan(distance)] = 0
-    distance[np.isinf(distance)] = 0
+    if os.path.exists(f'{name}.npy'):
+        distance = np.load(f'{name}.npy')
+        print(distance)
+        distance.reshape((len(points),len(vertex_coordinates)))
+    else: 
+        distance = np.zeros([len(points),len(vertex_coordinates)])
+        for j in range(len(vertex_coordinates)):
+            for i in range(len(points)):
+                distance[i,j] = homogeneous_memo(vertex_coordinates[j], points[i],j)
+            print("k")
+        distance[np.isnan(distance)] = 0
+        distance[np.isinf(distance)] = 0
+        
+        np.save(f'{name}',distance)
+        
     potentia = np.ones(len(points))*potentia
     print("hej")
     t = np.linalg.lstsq(distance.astype('float') , potentia.astype('float'),rcond=-1)[0]

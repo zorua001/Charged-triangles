@@ -15,12 +15,12 @@ To change the setup, create a new settings file and run that one instead
 
 import importlib
 from config.allowed_bodies import Body
+from config.point_potential import Point_potential
 
 #Loads the settingsfile requested
 def load_simulation_settings(settings_file):
     try:
         module = importlib.import_module(f'settings.simulation.{settings_file}')
-        print("k")
         settings = module.SIMULATION_PARAMS
         validate_settings_simulation(settings)  # Validate settings before returning
         return settings
@@ -40,6 +40,7 @@ def load_visualization_settings(settings_file):
 #Important to update the validator when adding a new setting or parameter
 def validate_settings_simulation(settings):
     required_keys = ['charge_distribution_method','field_point_method', 'bodies']
+    
     
     for key in required_keys:
         if key not in settings:
@@ -66,6 +67,11 @@ def validate_settings_simulation(settings):
         
     if not all(isinstance(item, Body) for item in settings['bodies']):
         raise ValueError("All bodies must be of the Body class")
+        
+    if settings['point_potential']:
+        if not all(isinstance(item, Point_potential) for item in settings['point_potential']):
+            raise ValueError("All point potentials must be of class Point_charge")
+            
 
 #Validates the settings for the visualizations, making sure that they are allowed
 #Important to update the validator when adding a new setting or parameter
