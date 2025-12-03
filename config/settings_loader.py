@@ -67,7 +67,7 @@ def validate_settings_simulation(settings):
     if not all(isinstance(item, Body) for item in settings['bodies']):
         raise ValueError("All bodies must be of the Body class")
         
-    if settings['point_potential']:
+    if 'point_potential' in settings:
         if not all(isinstance(item, Point_potential) for item in settings['point_potential']):
             raise ValueError("All point potentials must be of class Point_charge")
             

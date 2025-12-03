@@ -130,7 +130,7 @@ class Body:
         temp = np.array([[vertices[int(triangles[i][0])],vertices[int(triangles[i][1])],vertices[int(triangles[i][2])]] for i in range (len(triangles))])
         return temp
     
-    def calculate_colors(self, charge_method, color_method):
+    def calculate_colors(self, charge_method, color_method, min_density, max_density):
         """Calculates the colours on all the triangles"""
         """Currently only point charge method implemented"""
         areas = self.areas_of_triangles()
@@ -143,11 +143,13 @@ class Body:
             else:
                 raise ValueError(f'Both lists must be of the same length. They are now {len(self._charges)} and {len(areas)}')            
             if(color_method=='linear'):
-                self._mesh.triangle.colors = o3d.core.Tensor(get_color(charge_density),o3d.core.float32) 
+                self._mesh.triangle.colors = o3d.core.Tensor(get_color(charge_density,min_density, max_density),o3d.core.float32) 
             elif(color_method=='log'):
                 values_array = np.array(charge_density)
                 charge_density_log = np.where(values_array >= 0, np.log(values_array), -np.log(np.abs(values_array)))
-                self._mesh.triangle.colors = o3d.core.Tensor(get_color(charge_density_log),o3d.core.float32) 
+                min_density = np.log(min_density)
+                max_density = np.log(max_density)
+                self._mesh.triangle.colors = o3d.core.Tensor(get_color(charge_density_log,min_density, max_density),o3d.core.float32) 
             else:
                 raise ValueError(f'{color_method} is not a valid color_method in calculate_colours in Body. Try linear' )
             return
@@ -193,15 +195,16 @@ class Box:
 
 """
 Returns a list of colors equally long as the list sent in.
-Takes a list of values which represents relative colour.
+Takes a list of values which represents relative colour as well as the minimum 
+and maximum value across all bodies
 """
-def get_color(relative_values):
+def get_color(relative_values, min_value,max_value):
     #We copy the list so that nothing happens to the original
     temp = copy.deepcopy(relative_values)
-    #We get values between 0 and 1
-    temp = temp/max(temp)
+    #We rescale between 0 and 1
+    temp_rescaled = (temp - min_value) / (max_value - min_value)
     #We create a color spectrum where lowest value will be green and highest red
-    color = np.array([[0.5+0.5*i,0.5-0.5*i,0] for i in temp])
+    color = np.array([[0.5+0.5*i,0.5-0.5*i,0] for i in temp_rescaled])
     return color
     
 

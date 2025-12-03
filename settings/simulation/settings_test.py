@@ -14,9 +14,7 @@ SIMULATION_PARAMS = {
     'offset':float(0.5),
     #Which geometric bodies exist in this setup (see file allowed_bodies)
     'bodies': ([
-                Body('cylinder',float(10), pos=[0,0,0],rot=[0,0,0], radius=1, height=3,length_resolution=10, height_resolution=20),
-                Body('cylinder',float(7), pos=[0,5,0],rot=[1.5,0,0], radius=1, height=5,length_resolution=15, height_resolution=30), 
-                Body('sphere', float(5),pos=[2,2,3], rot=[0,0,0],radius=1, resolution=30), 
-                Body('sphere', float(0),pos=[1.2,1.2,0], rot=[0,0,0],radius=0.5, resolution=10) 
+                Body('cylinder',float(10), pos=[0,0,0],rot=[0,0,0], radius=1, height=3,length_resolution=20, height_resolution=20),
+                Body('sphere', float(10),pos=[1.2,1.2,0], rot=[0,0,0],radius=0.5, resolution=10) 
                 ])
 }
