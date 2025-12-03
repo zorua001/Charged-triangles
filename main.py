@@ -22,6 +22,8 @@ from config.settings_loader import load_visualization_settings
 import numpy as np
 from charge.calculate_charge import calculate_charge
 from config.save_data import save_data
+from get_axis import get_axis
+from get_axis import create_color_scale
 
 
 def run_simulation(simulation_params, visualization_params, settings_name):
@@ -122,10 +124,14 @@ def run_simulation(simulation_params, visualization_params, settings_name):
     
     #We create the colors in the bodies.
         #We then visualize all the bodies
+    ##This needs to be moved to outside the body somehow (or take some maximum and minimum value from outside)!
+    ##Currently each body creates a color scale of its own!
     for body in bodies:
         body.calculate_colors(charge_distribution_method, visualization_params['color_method'])
-        
-    o3d.visualization.draw([body.mesh for body in bodies])
+    
+    axis, ticks = get_axis(length=5.0)
+    #create_color_scale(0, 10, num_colors=10)
+    o3d.visualization.draw([body.mesh for body in bodies]+[axis,ticks])
     
     
     #7. Save the result
