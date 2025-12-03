@@ -9,6 +9,7 @@ import numpy as np
 import functools
 import concurrent.futures as future
 import os
+import time
 
 def stora_p (a,b,c,d,e,n):
     return 2*np.log((b**2+d**2)*n+a*b+c*d+np.sqrt(((b**2+d**2)*n+a*b+c*d)**2+(a*d-b*c)**2+e**2*(b**2+d**2)))
@@ -100,6 +101,7 @@ def charge(vertex_coordinates,points,potentia):
 
 def charge_2(vertex_coordinates,points,potentia,name):
     print("hello")
+    t = time.time()
     if os.path.exists(f'{name}.npy'):
         distance = np.load(f'{name}.npy')
         print(distance)
@@ -117,6 +119,8 @@ def charge_2(vertex_coordinates,points,potentia,name):
         
     potentia = np.ones(len(points))*potentia
     print("hej")
+    s = time.time()
+    print(s-t)
     t = np.linalg.lstsq(distance.astype('float') , potentia.astype('float'),rcond=-1)[0]
     return t
 
