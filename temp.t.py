@@ -46,7 +46,7 @@ def point_ch(centroid,extended,triangle,decision):
 
 #Beräknar laddning utifrån homogen fördelning
 def homogeneous_ch(centroid,triangles):
-    k = hct.charge_2(triangles, centroid, 5,'cylinder+sphere')
+    k = hct.charge_2(triangles, centroid, 5,'cylinder+sphere_1')
     print(sum(k))
    
     for i in range(len(k)):
@@ -108,14 +108,14 @@ def get_triangles(vertice, triangle):
     t = np.array([[vertice[int(triangle[i][0])],vertice[int(triangle[i][1])],vertice[int(triangle[i][2])]] for i in range (len(triangle))])
     return t
 ##Kanske ändra till o3d.t 
-mesh = o3d.t.geometry.TriangleMesh.create_cylinder(1,3,20,40)
+mesh = o3d.t.geometry.TriangleMesh.create_cylinder(1,3,10,20)
 
 
 
 
 #print(mesh.vertex["positions"].numpy())
 
-mesh2 = o3d.t.geometry.TriangleMesh.create_sphere(.5,20)
+mesh2 = o3d.t.geometry.TriangleMesh.create_sphere(.5,10)
 mesh2 = mesh2.translate(o3d.core.Tensor([1.2,1.2,0]))
 
 
