@@ -23,7 +23,6 @@ import numpy as np
 from charge.calculate_charge import calculate_charge
 from config.save_data import save_data
 from get_axis import get_axis
-from get_axis import create_color_scale
 
 
 def run_simulation(simulation_params, visualization_params, settings_name):
@@ -63,7 +62,8 @@ def run_simulation(simulation_params, visualization_params, settings_name):
              s_triangle_vertices = body.get_triangle_vertices()
         
              charge_information.append(s_triangle_vertices) 
-         charge_information.np.vstack((charge_information) if charge_information else np.array([]))
+         
+         charge_information = np.vstack((charge_information) if charge_information else np.array([]))
         
     else:
         ValueError('We need an allowed charge_calculation_method')
@@ -95,7 +95,7 @@ def run_simulation(simulation_params, visualization_params, settings_name):
         
     ## Sätter potentialen i punkter nära point_potential till potentialen från point_potential
     ## Sätter just nu in sista potentialen, vilket också 
-    if simulation_params['point_potential']:
+    if 'point_potential' in simulation_params:
         point_potential = simulation_params['point_potential']
         for j in range(len(point_potential)): 
             for i in range(len(field_points)):
@@ -107,27 +107,53 @@ def run_simulation(simulation_params, visualization_params, settings_name):
         #The charges are then put out to the bodies in the order and length 
         #that centroid were put in
         #This method relies on bodies being ordered (such as a list)
-    charges = calculate_charge(charge_distribution_method, charge_information, field_points, field_point_potentials)
+    name = simulation_params['name']
+    charges = calculate_charge(charge_distribution_method, charge_information, field_points, field_point_potentials,name)
 
     ## Skriv ut högsta, lägsta och summan av laddningarna
-    print(f'Highest charge: {max(charges)}')
-    print(f'Lowest charge: {min(charges)}')
-    print(f'Total charge: {sum(charges)}')
+    
 
     i = 0
     for body in bodies:
         body.charges = charges[i:i+len(body.get_triangles())]
         i+=len(body.get_triangles())
+        print(f'hej {i}')
+    print(f'i ={i}')
     del i
+    print(f'Len {len(charges)}')
     
     #6.Visualize
     
     #We create the colors in the bodies.
-        #We then visualize all the bodies
-    ##This needs to be moved to outside the body somehow (or take some maximum and minimum value from outside)!
-    ##Currently each body creates a color scale of its own!
+    #We then visualize all the bodies
+    
+    # Get the areas of the triangles
+    areas = [] 
     for body in bodies:
-        body.calculate_colors(charge_distribution_method, visualization_params['color_method'])
+        s_areas=body.areas_of_triangles()  
+        areas.extend(s_areas)
+    
+    #Calculate lowest and highest charge density
+    if(charge_distribution_method in ['point_charge', 'homogenous']):
+        if len(charges) == len(areas):
+            if charge_distribution_method == 'point_charge':
+                print(f'Total charge: {sum(charges)}')
+                charge_density = [charge / area for charge, area in zip(charges, areas)]
+            else:
+                charge = [charge * area for charge, area in zip(charges, areas)]
+                print(f'Total charge: {sum(charge)}')
+                charge_density = charges 
+        else:
+            raise ValueError(f'Both lists must be of the same length. They are now {len(charges)} and {len(areas)}')   
+    
+    min_density = min(charge_density)
+    max_density = max(charge_density)
+    
+    
+    print(f'Minumum charge density:{min_density}')
+    print(f'Maximun charge density: {max_density}')
+    for body in bodies:
+        body.calculate_colors(charge_distribution_method, visualization_params['color_method'], min_density,max_density)
     
     axis, ticks = get_axis(length=5.0)
     #create_color_scale(0, 10, num_colors=10)
@@ -142,7 +168,7 @@ def run_simulation(simulation_params, visualization_params, settings_name):
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Run the simulation with adjustable parameters.")
-    parser.add_argument("--settings", type=str, default="settings_default", help="Name of the simulation settings file to use.")
+    parser.add_argument("--settings", type=str, default="settings_default_homo", help="Name of the simulation settings file to use.")
     parser.add_argument("--visualization", type=str, default="settings_default", help="Name of the visualization settings file to use.")
     return parser.parse_args()
     

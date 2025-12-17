@@ -58,7 +58,7 @@ def validate_settings_simulation(settings):
         # Offset must be single float between 0 and 1
         if not isinstance(settings['offset'], (int, float)):
             raise ValueError("offset must be a single number.")
-        if not (0 < settings['offset'] < 1):
+        if not (0 < settings['offset'] and settings['offset'] != 1):
             raise ValueError("offset must be between 0 and 1.")
         
     if not isinstance(settings['bodies'], list):
@@ -67,7 +67,7 @@ def validate_settings_simulation(settings):
     if not all(isinstance(item, Body) for item in settings['bodies']):
         raise ValueError("All bodies must be of the Body class")
         
-    if settings['point_potential']:
+    if 'point_potential' in settings:
         if not all(isinstance(item, Point_potential) for item in settings['point_potential']):
             raise ValueError("All point potentials must be of class Point_charge")
             

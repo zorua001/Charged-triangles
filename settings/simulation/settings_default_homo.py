@@ -1,20 +1,17 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Nov 17 15:53:25 2025
+Created on Wed Dec 17 12:26:56 2025
 
-This is an example of a settings file. It is recommended when creating new
-settings to copy this file and then make changes. See settings_loader for exact
-definitions on which settings are allowed.
-
-@author: Hampus Berndt
+@author: MSI Prestige
 """
+
 from config.allowed_bodies import Body
 from config.point_potential import Point_potential
 
 SIMULATION_PARAMS = {
-    'name': 'cylinder_point',
+    'name': 'cylinder_homo',
     #Which charge distribution is used. Options are point_charge, homogenous
-    'charge_distribution_method': 'point_charge',
+    'charge_distribution_method': 'homogenous',
     #Which method for finding field points is used. Options are centroid, triple
     'field_point_method': 'triple',
     #If you have field_point_method 'triple' you need an offset variable which is a float between 0 and 1
