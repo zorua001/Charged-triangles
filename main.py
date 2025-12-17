@@ -15,8 +15,9 @@ example:
 
 @author: Hampus Berndt
 """
-import open3d as o3d
+
 import argparse
+import open3d as o3d
 from config.settings_loader import load_simulation_settings
 from config.settings_loader import load_visualization_settings
 import numpy as np
@@ -159,7 +160,7 @@ def run_simulation(simulation_params, visualization_params, settings_name):
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Run the simulation with adjustable parameters.")
-    parser.add_argument("--settings", type=str, default="settings_default", help="Name of the simulation settings file to use.")
+    parser.add_argument("--settings", type=str, default="hvp_smoothness_p_cylinder_400", help="Name of the simulation settings file to use.")
     parser.add_argument("--visualization", type=str, default="settings_default", help="Name of the visualization settings file to use.")
     return parser.parse_args()
     

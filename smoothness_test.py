@@ -13,65 +13,7 @@ from config.settings_loader import load_visualization_settings
 from config.allowed_bodies import Body
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-
-
-def run_test(simulation_params, visualization_params):
-    #Setup
-    #Already done through loading the save
-    print(f'Simulation parameters: {simulation_params}')
-    
-    bodies = simulation_params['bodies']
-    
-    '''Circle test'''
-    #We decide on some radii and center (these are based on a cylinder radius of 10)
-    radii = [10,11,12,20]
-    center = (0,0,0)
-    resolution = 1000
-    total_points = []
-    for radius in radii:
-        points,angles = generate_circle_points_in_xy_plane(resolution, radius, center)
-        total_points.append(points)
-        potential = 
-        plot_circle(angles,potentials,radius)
-        
-        
-    device = o3d.core.Device("CPU:0")
-    dtype = o3d.core.float32
-    pcd = o3d.t.geometry.PointCloud(device)
-    
-    pcd.point.positions = o3d.core.Tensor(total_points, dtype, device)
-
-    '''Full triangle test'''
-    index = 1
-    resolution = 1000
-    triangle_vertices = bodies[0].get_triangle_vertices()[index]
-    points = generate_evenly_distributed_points(triangle_vertices[0], triangle_vertices[1], triangle_vertices[2], resolution)
-    potentials = 
-    plot_triangle_and_potential(triangle_vertices[0], triangle_vertices[1], triangle_vertices[2], points, potentials)
-    
-    '''Random scatter test'''
-    
-    
-    
-    #Visualize everything
-    #We create the colors in the bodies.
-        #We then visualize all the bodies
-    for body in simulation_params['bodies']:
-        body.calculate_colors(simulation_params['charge_distribution_method'], visualization_params['color_method'])
-        
-    o3d.visualization.draw([body.mesh for body in  simulation_params['bodies']]+[pcd])
- 
-def parse_arguments():
-    parser = argparse.ArgumentParser(description="Run the results of a previous simulation.")
-    parser.add_argument("--save", type=str, required=True, help="Name of the save file to use. The save files can be found under the saves directory")
-    parser.add_argument("--visualization", type=str, default="hvp_smoothness_p_cylinder_10000", help="Name of the visualization settings file to use.")
-    return parser.parse_args()
-    
-if __name__ == "__main__":
-    args = parse_arguments()
-    simulation_params = load_save(args.save)
-    visualization_params = load_visualization_settings(args.visualization)
-    run_test(simulation_params, visualization_params)
+from charge.calculate_potential import calculate_potential_from_point
 
 
 def plot_circle(angles,potentials, radius):
@@ -151,3 +93,73 @@ def plot_triangle_and_potential(v1, v2, v3, points, potentials):
     cbar.set_label('Potential')
 
     plt.show()
+
+
+
+def run_test(simulation_params, visualization_params):
+    #Setup
+    #Already done through loading the save
+    print(f'Simulation parameters: {simulation_params}')
+    
+    bodies = simulation_params['bodies']
+    
+    '''Circle test'''
+    #We decide on some radii and center (these are based on a cylinder radius of 10)
+    radii = [20]
+    center = (0,0,0)
+    resolution = 1000
+    total_points = []
+    for radius in radii:
+        points,angles = generate_circle_points_in_xy_plane(resolution, radius, center)
+        total_points.append(points)
+        potentials = [calculate_potential_from_point(point) for point in points]
+        plot_circle(angles,potentials,radius)
+        
+    print(total_points)    
+    # Convert the list of tuples to a NumPy array
+    points_np = np.array(total_points).astype(np.float32)  # Ensure correct data type
+
+# Create an Open3D tensor from the NumPy array
+    points_tensor = o3d.core.Tensor(points_np)
+
+# Create a point cloud object
+    point_cloud = o3d.t.geometry.PointCloud()
+
+# Set points for the point cloud
+    point_cloud.point["positions"] = points_tensor
+    colors = np.array([[1, 0, 0] for _ in points])  # Red
+    point_cloud.point["colors"] = o3d.core.Tensor(colors)
+    
+    
+
+    '''Full triangle test'''
+    index = 1
+    resolution = 1000
+    triangle_vertices = bodies[0].get_triangle_vertices()[index]
+    points = generate_evenly_distributed_points(triangle_vertices[0], triangle_vertices[1], triangle_vertices[2], resolution)
+    potentials = [calculate_potential_from_point(p) for p in points]
+    plot_triangle_and_potential(triangle_vertices[0], triangle_vertices[1], triangle_vertices[2], points, potentials)
+    
+    '''Random scatter test'''
+    
+    
+    
+    #Visualize everything
+    #We create the colors in the bodies.
+        #We then visualize all the bodies
+    #for body in simulation_params['bodies']:
+    #    body.calculate_colors(simulation_params['charge_distribution_method'], visualization_params['color_method'])
+        
+    o3d.visualization.draw(point_cloud)
+ 
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Run the results of a previous simulation.")
+    parser.add_argument("--save", type=str, default = 'hvp_smoothness_p_cylinder_400_1', help="Name of the save file to use. The save files can be found under the saves directory")
+    parser.add_argument("--visualization", type=str, default="settings_default", help="Name of the visualization settings file to use.")
+    return parser.parse_args()
+    
+if __name__ == "__main__":
+    args = parse_arguments()
+    simulation_params = load_save(args.save)
+    visualization_params = load_visualization_settings(args.visualization)
+    run_test(simulation_params, visualization_params)
