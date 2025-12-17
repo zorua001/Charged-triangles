@@ -16,7 +16,7 @@ example of how to run :
 
 
 import argparse
-from config.settings_loader import load_settings
+from config.settings_loader import load_simulation_settings
 import open3d as o3d
 
 
@@ -26,6 +26,10 @@ def run_simulation(simulation_params):
     #Already done through setting setup
     print(f'Simulation parameters: {simulation_params}')
     
+    i=0
+    for body in simulation_params['bodies']:
+        i+=len(body.get_triangles())  
+    print(f'Amount of triangles: {i}')
     
     #Create the bodies
     o3d.visualization.draw([body.mesh for body in simulation_params['bodies']])
@@ -39,6 +43,6 @@ def parse_arguments():
     
 if __name__ == "__main__":
     args = parse_arguments()
-    simulation_params = load_settings(args.settings)
+    simulation_params = load_simulation_settings(args.settings)
     run_simulation(simulation_params)
 
