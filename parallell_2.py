@@ -29,7 +29,6 @@ def charge(charge_coordinates,points,potentia):
     s = time.time()
     print(s-t)
     k = np.linalg.lstsq(result.astype('float') , potentia.astype('float'),rcond=-1)
-    print(k[1])
     return k[0]
 
 charge_coordinates = np.asarray([[1,5,7],[3,6,0],[2,3,2],[4,5,4]])

@@ -33,8 +33,7 @@ def point_ch(centroid,extended,triangle,decision):
         k = ch.charge(centroid, extended, -5)
     else:
         k = ch.charge(centroid,centroid,-5)
-    print(k)
-    print(sum(k))
+    chai = k
     for i in range(len(k)):
         if k[i] >= 0: 
             k[i] =  np.log(k[i]/surface[i])
@@ -42,12 +41,12 @@ def point_ch(centroid,extended,triangle,decision):
             k[i] = -np.log(abs(k[i])/surface[i])
     k = k/max(abs(k))
     färg = np.array([[i,1-i,0] for i in k])
-    return färg    
+    return färg, chai
 
 #Beräknar laddning utifrån homogen fördelning
-def homogeneous_ch(centroid,triangles):
-    k = hct.charge_2(triangles, centroid, 5,'cylinder+sphere_1')
-    print(sum(k))
+def homogeneous_ch(centroid,triangles,name):
+    k = hct.charge_2(triangles, centroid, 5,name)
+    chai = k
    
     for i in range(len(k)):
         if k[i] >= 0: 
@@ -56,15 +55,14 @@ def homogeneous_ch(centroid,triangles):
             k[i] = -np.log(abs(k[i]))
     k = k/max(abs(k))
     färg = np.array([[0.5+0.5*i,0.5-0.5*i,0] for i in k])
-    return färg    
+    return färg,chai
     
     
-def centroid(mesh):
+def centroid(mesh,w):
     vertice = mesh.vertex["positions"].numpy()
     triangle = mesh.triangle["indices"].numpy()
     centroid = np.empty([len(triangle),3])
     extended = np.empty([3*len(triangle),3])
-    w = 0.5
     for i in range (len(triangle)):
         h = np.asarray([vertice[int(triangle[i][0])],vertice[int(triangle[i][1])],vertice[int(triangle[i][2])]])
         t = [(h[0][j]+h[1][j]+h[2][j])/3 for j in range (3)]
@@ -107,45 +105,93 @@ def more_points(centroid):
 def get_triangles(vertice, triangle):
     t = np.array([[vertice[int(triangle[i][0])],vertice[int(triangle[i][1])],vertice[int(triangle[i][2])]] for i in range (len(triangle))])
     return t
+
+
+def potential_difference(triangles,charges,points):
+    tot_pot= [0 for i in range(len(points))]
+    for j in range(len(points)):
+        for i in range(len(triangles)):
+            tot_pot[j] = tot_pot[j] + hct.homogeneous_memo(triangles[i], points[j], i)*charges[i]
+        print(tot_pot[j])
+    return (tot_pot[1]-tot_pot[0])/np.linalg.norm(points[0]-points[1])      
+            
+
+def charge_difference(charges,laddningar):
+    print(f'charges/laddningar = {(sum(charges))/(sum(laddningar))}')
+    k = np.zeros(len(charges))
+    for i in range(len(charges)):
+        k[i] = abs(charges[i]-laddningar[i])/((charges[i]+laddningar[i])/2)*100
+    return(sum(k)/len(k))        
+
 ##Kanske ändra till o3d.t 
-mesh = o3d.t.geometry.TriangleMesh.create_cylinder(1,3,10,20)
+mesh = o3d.geometry.TriangleMesh.create_box(3,3,3)
+mesh = mesh.subdivide_midpoint(number_of_iterations= 4)
+mesh = o3d.t.geometry.TriangleMesh.from_legacy(mesh)
 
 
 
 
 #print(mesh.vertex["positions"].numpy())
 
-mesh2 = o3d.t.geometry.TriangleMesh.create_sphere(.5,10)
-mesh2 = mesh2.translate(o3d.core.Tensor([1.2,1.2,0]))
+mesh2 = o3d.t.geometry.TriangleMesh.create_cylinder(.25,5,10,20)
+mesh3 = mesh2.translate(o3d.core.Tensor([.25,.25,-1.5]))
 
+mesh4 = o3d.t.geometry.TriangleMesh.create_cylinder(.25,5,10,20)
+mesh5 = mesh4.translate(o3d.core.Tensor([2.75,.25,-1.5]))
+w= 0.5
+center,vertice,triangle,extended = centroid(mesh,w)
 
-center,vertice,triangle,extended = centroid(mesh)
-center_2,vertice_2,triangle_2,extended_2 = centroid(mesh2)
-tot = np.concatenate((center,center_2))
+center_2,vertice_2,triangle_2,extended_2 = centroid(mesh2,w)
+print(len(center_2))
+center_3,vertice_3,triangle_3,extended_3 = centroid(mesh5,w)
+tot = np.concatenate((center,center_2,center_3))
 triangles = get_triangles(vertice, triangle)
 triangles_2 = get_triangles(vertice_2, triangle_2)
-tot_a = np.concatenate((triangles,triangles_2))
-tot_c = np.concatenate((extended,extended_2))
-
+triangles_3 = get_triangles(vertice_3,triangle_3)
+tot_a = np.concatenate((triangles,triangles_2,triangles_3))
+tot_c = np.concatenate((extended,extended_2,extended_3))
+print(len(tot_a))
 
 #Ändra från true eller false om man ska använda fler punkter eller inte
 decision = 1
 
 
 t = time.time()
-färg = point_ch(tot,tot_c,tot_a,decision)
-#färg = homogeneous_ch(tot, tot_a)
+#färg = point_ch(tot,tot_c,tot_a,decision)
+#färg, chai = homogeneous_ch(tot_a, tot_a,'box_cylinder_cylinder_homo_centroid')
 
 #färg_2 = homogeneous_ch(tot,tot_a)
 s = time.time()
 print(s-t)
-print(len(tot))
-mesh.triangle.colors = o3d.core.Tensor(färg[:len(center)],o3d.core.float32)
-mesh.compute_vertex_normals()
+punkter = np.array([[3,6,7],[-5,0,0]])
+a = np.linspace(0.1,5,50)
+mesh_test = o3d.t.geometry.TriangleMesh.create_cylinder(1,1,5,10)
+b = np.zeros(len(a))
+for i in range(len(a)):
+    center_test,vertice_test,triangle_test,extended_test = centroid(mesh_test,a[i])
+    triangle_test = get_triangles(vertice_test, triangle_test)
+    col,lad = homogeneous_ch(extended_test, triangle_test, a[i])
+    b[i] = sum(lad)
+print(b)
+#c = np.zeros(len(a))
+#for i in range(len(a)):
+    #center_test,vertice_test,triangle_test,extended_test = centroid(mesh_test,a[i])
+   # triangle_test = get_triangles(vertice_test, triangle_test)
+  #  col,lad = point_ch(center_test,extended_test, triangle_test, 1)
+ #   c[i] = sum(lad)
 
-more_points(np.array([[1,2,3]]))
+#print(b,c)
+#print(potential_difference(tot_a,chai,punkter))
+#mesh.triangle.colors = o3d.core.Tensor(färg[:len(center)],o3d.core.float32)
+#mesh.compute_vertex_normals()
 
-mesh2.triangle.colors = o3d.core.Tensor(färg[len(center):],o3d.core.float32)
-mesh2.compute_vertex_normals()
 
-o3d.visualization.draw([mesh,mesh2])
+#mesh2.triangle.colors = o3d.core.Tensor(färg[len(center):len(center)+len(center_2)],o3d.core.float32)
+#mesh2.compute_vertex_normals()
+
+
+#mesh2.triangle.colors = o3d.core.Tensor(färg[len(center)+len(center_2):],o3d.core.float32)
+#mesh2.compute_vertex_normals()
+
+
+#o3d.visualization.draw([mesh,mesh2,mesh3])

@@ -56,10 +56,10 @@ def validate_settings_simulation(settings):
         if 'offset' not in settings:
             raise ValueError("Missing required setting: 'offset' when 'field_point_method' is 'triple'")
         # Offset must be single float between 0 and 1
-        #if not isinstance(settings['offset'], (int, float)):
-        #    raise ValueError("offset must be a single number.")
-        #if not (0 < settings['offset'] < 1):
-        #    raise ValueError("offset must be between 0 and 1.")
+        if not isinstance(settings['offset'], (int, float)):
+            raise ValueError("offset must be a single number.")
+        if not (0 < settings['offset'] and settings['offset'] != 1):
+            raise ValueError("offset must be between 0 and 1.")
         
     if not isinstance(settings['bodies'], list):
         raise ValueError("Expected 'bodies' to be a list.")

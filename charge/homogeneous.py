@@ -3,7 +3,11 @@
 Created on Wed Nov  5 13:44:27 2025
 
 @author: MSI Prestige
+
+A script for calculating the potential from a homogenously charged triangle using the method from Okon and Harrigton (1982)
 """
+
+
 
 import numpy as np
 import functools
@@ -12,10 +16,17 @@ import os
 import time
 
 def stora_p (a,b,c,d,e,n):
-    return 2*np.log((b**2+d**2)*n+a*b+c*d+np.sqrt(((b**2+d**2)*n+a*b+c*d)**2+(a*d-b*c)**2+e**2*(b**2+d**2)))
+    k = abs((b**2+d**2)*n+a*b+c*d+np.sqrt(((b**2+d**2)*n+a*b+c*d)**2+(a*d-b*c)**2+e**2*(b**2+d**2)))
+    if k <= 0 :
+        print('hej')
+        return 10^18
+    
+    return 2*np.log(abs((b**2+d**2)*n+a*b+c*d+np.sqrt(((b**2+d**2)*n+a*b+c*d)**2+(a*d-b*c)**2+e**2*(b**2+d**2))))
 
 def stora_q (a,b,c,d,e,n):
     t = d*e*((a*d-b*c)*(c+d*n)-b*e**2)
+    if e == 0:
+        return - 1
     x =(abs(e*d)*np.sqrt((a+b*n)**2+(c+d*n)**2+e**2))/np.sqrt(((c+d*n)**2+e**2)*((a*d-b*c)**2+(e**2)*(b**2+d**2)))
     if np.isnan(x):
         x = 0
@@ -30,7 +41,10 @@ def stora_q (a,b,c,d,e,n):
 def stora_j (a,a_prim,b,b_prim,c,c_prim,d,e,n):
     k = a*d-b*c
     k_prim = a_prim*d-b_prim*c ## Försöker använda formeln för k från linär 
-    rad_1 = np.log((a+b*n + np.sqrt((a+b*n)**2+(c+d*n)**2+e**2))/(a_prim+b_prim*n+np.sqrt((a_prim+b_prim*n)**2+(c+d*n)**2+e**2)))*(c+d*n)/d 
+    if a_prim+b_prim*n + np.sqrt((a_prim+b_prim*n)**2+(c+d*n)**2+e**2) == 0 :
+        rad_1 = 0
+    else:
+        rad_1 = np.log((a+b*n + np.sqrt((a+b*n)**2+(c+d*n)**2+e**2))/(a_prim+b_prim*n+np.sqrt((a_prim+b_prim*n)**2+(c+d*n)**2+e**2)))*(c+d*n)/d 
     rad_2_1 = k*stora_p(a, b, c, d, e, n)/(2*d*np.sqrt(b**2+d**2))-k_prim*stora_p(a_prim, b_prim, c, d, e, n)/(2*d*np.sqrt(b_prim**2+d**2))
     rad_2_2 = (stora_q(a, b, c, d, e, n)-stora_q(a_prim, b_prim, c, d, e, n))*e/d
     return rad_1+rad_2_1+rad_2_2
@@ -55,7 +69,8 @@ def homogeneous (triange,point):
     c = np.dot(n, np.transpose(np.cross(triange[0]-triange[2],triange[2]-point)))/(alpha**2)
     d = q/(alpha**2)
     e = abs(np.dot(n,np.transpose(triange[2]-point)))/alpha
-    c_prim = c ##Ingen aning vad c_prim är
+    c_prim = c ##Ingen aning vad c_prim 
+    print(a,b,c,d,e)
     return (2*area(triange)/alpha)*(stora_j(a, a_prim, b, b_prim, c, c_prim, d, e, 1)-stora_j(a, a_prim, b, b_prim, c, c_prim, d, e, 0))
 
 def homogeneous_memo (triange,point,j):
@@ -80,6 +95,7 @@ def homogeneous_memo (triange,point,j):
    
     e = abs(np.dot(n,np.transpose(triange[2]-point)))/alpha
     c_prim = c ##Ingen aning vad c_prim är
+    
     return (2*area(triange)/alpha)*(stora_j(a, a_prim, b, b_prim, c, c_prim, d, e, 1)-stora_j(a, a_prim, b, b_prim, c, c_prim, d, e, 0))
 
 
@@ -100,34 +116,37 @@ def charge(vertex_coordinates,points,potentia):
     return t
 
 def charge_2(vertex_coordinates,points,potentia,name):
-    print("hello")
     t = time.time()
     if os.path.exists(f'{name}.npy'):
         distance = np.load(f'{name}.npy')
-        print(distance)
         distance.reshape((len(points),len(vertex_coordinates)))
     else: 
         distance = np.zeros([len(points),len(vertex_coordinates)])
         for j in range(len(vertex_coordinates)):
             for i in range(len(points)):
                 distance[i,j] = homogeneous_memo(vertex_coordinates[j], points[i],j)
-            print("k")
         distance[np.isnan(distance)] = 0
         distance[np.isinf(distance)] = 0
         
         np.save(f'{name}',distance)
         
     potentia = np.ones(len(points))*potentia
-    print("hej")
     s = time.time()
     print(s-t)
-    t = np.linalg.lstsq(distance.astype('float') , potentia.astype('float'),rcond=-1)[0]
+    t = np.linalg.lstsq(distance.astype('float') , potentia,rcond=-1)[0]
     return t
 
 
 memory = {}
-n = homogeneous(np.array([[1,0,0],[0.5,0.867,0],[0,0,0]]), np.array([0.5,0.289,0.5]))
-m = homogeneous(np.array([[0,0,0],[1,0,0], [0.25,1,0]]), np.array([2,0,2]))
+k = np.array([[2,2,2],[2,1.62,2],[2,0,2],[2,2,0],[2,2,-2],[2,2,9],[9,2,9],[9,0,0]])
+#n = homogeneous(np.array([[0,0,0],[1,0,0],[0.5,0.867,0]]), np.array([0.5,0.289,0.5]))
+#for i in range(len(k)):
+#    print(homogeneous(np.array([[0,0,0],[1,0,0], [0.25,1,0]]), k[i]))
+#    print(homogeneous(np.array([[0,0,0], [0.25,1,0],[1,0,0]]), k[i]))
+#    print(homogeneous(np.array([[1,0,0],[0,0,0], [0.25,1,0]]), k[i]))
+#    print(homogeneous(np.array([[1,0,0], [0.25,1,0],[0,0,0]]), k[i]))
+#    print(homogeneous(np.array([[0.25,1,0],[0,0,0],[1,0,0]]), k[i]))
+#    print(homogeneous(np.array([[0.25,1,0],[1,0,0],[0,0,0] ]), k[i]))
 
-print(n)
+#print(n)
 #print(m)

@@ -15,9 +15,8 @@ example:
 
 @author: Hampus Berndt
 """
-
-import argparse
 import open3d as o3d
+import argparse
 from config.settings_loader import load_simulation_settings
 from config.settings_loader import load_visualization_settings
 import numpy as np
@@ -63,7 +62,8 @@ def run_simulation(simulation_params, visualization_params, settings_name):
              s_triangle_vertices = body.get_triangle_vertices()
         
              charge_information.append(s_triangle_vertices) 
-         charge_information.np.vstack((charge_information) if charge_information else np.array([]))
+         
+         charge_information = np.vstack((charge_information) if charge_information else np.array([]))
         
     else:
         ValueError('We need an allowed charge_calculation_method')
@@ -107,19 +107,27 @@ def run_simulation(simulation_params, visualization_params, settings_name):
         #The charges are then put out to the bodies in the order and length 
         #that centroid were put in
         #This method relies on bodies being ordered (such as a list)
-    charges = calculate_charge(charge_distribution_method, charge_information, field_points, field_point_potentials)
+    name = simulation_params['name']
+    charges = calculate_charge(charge_distribution_method, charge_information, field_points, field_point_potentials,name)
 
     ## Skriv ut högsta, lägsta och summan av laddningarna
+<<<<<<< HEAD
+    
+=======
     print(f'Highest charge: {max(charges)}')
     print(f'Lowest charge: {min(charges)}')
     ##TODO: total charge only relevant for point charges!!!
     print(f'Total charge: {sum(charges)}')
+>>>>>>> 6816f83e75e479325938b3ce06ab3bfe6892666e
 
     i = 0
     for body in bodies:
         body.charges = charges[i:i+len(body.get_triangles())]
         i+=len(body.get_triangles())
+        print(f'hej {i}')
+    print(f'i ={i}')
     del i
+    print(f'Len {len(charges)}')
     
     #6.Visualize
     
@@ -136,14 +144,30 @@ def run_simulation(simulation_params, visualization_params, settings_name):
     if(charge_distribution_method in ['point_charge', 'homogenous']):
         if len(charges) == len(areas):
             if charge_distribution_method == 'point_charge':
+<<<<<<< HEAD
+                print(f'Total charge: {sum(charges)}')
+                charge_density = [charge / area for charge, area in zip(charges, areas)]
+            else:
+                charge = [charge * area for charge, area in zip(charges, areas)]
+                print(f'Total charge: {sum(charge)}')
+                charge_density = charges 
+=======
                 charge_density = [charge / area for charge, area in zip(charges, areas)]
             else:
                charge_density = charges 
+>>>>>>> 6816f83e75e479325938b3ce06ab3bfe6892666e
         else:
             raise ValueError(f'Both lists must be of the same length. They are now {len(charges)} and {len(areas)}')   
     
     min_density = min(charge_density)
     max_density = max(charge_density)
+<<<<<<< HEAD
+    
+    
+    print(f'Minumum charge density:{min_density}')
+    print(f'Maximun charge density: {max_density}')
+=======
+>>>>>>> 6816f83e75e479325938b3ce06ab3bfe6892666e
     for body in bodies:
         body.calculate_colors(charge_distribution_method, visualization_params['color_method'], min_density,max_density)
     
@@ -160,7 +184,7 @@ def run_simulation(simulation_params, visualization_params, settings_name):
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Run the simulation with adjustable parameters.")
-    parser.add_argument("--settings", type=str, default="hvp_smoothness_p_cylinder_400", help="Name of the simulation settings file to use.")
+    parser.add_argument("--settings", type=str, default="settings_default_homo", help="Name of the simulation settings file to use.")
     parser.add_argument("--visualization", type=str, default="settings_default", help="Name of the visualization settings file to use.")
     return parser.parse_args()
     
