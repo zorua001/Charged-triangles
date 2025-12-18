@@ -110,7 +110,6 @@ def run_simulation(simulation_params, visualization_params, settings_name):
     name = simulation_params['name']
     charges = calculate_charge(charge_distribution_method, charge_information, field_points, field_point_potentials,name)
 
-
     i = 0
     for body in bodies:
         body.charges = charges[i:i+len(body.get_triangles())]
@@ -166,7 +165,9 @@ def run_simulation(simulation_params, visualization_params, settings_name):
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Run the simulation with adjustable parameters.")
-    parser.add_argument("--settings", type=str, default="hvp_smoothness_h_cylinder_10000", help="Name of the simulation settings file to use.")
+    print('Enter wanted settings file:')
+    k = input()
+    parser.add_argument("--settings", type=str, default=k, help="Name of the simulation settings file to use.")
     parser.add_argument("--visualization", type=str, default="settings_default", help="Name of the visualization settings file to use.")
     return parser.parse_args()
     

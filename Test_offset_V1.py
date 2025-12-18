@@ -47,7 +47,7 @@ b = np.zeros(len(a))
 for i in range(len(a)):
     center_test,vertice_test,triangle_test,extended_test = get_triple_points(mesh,a[i])
     triangle_test = get_triangles(vertice_test, triangle_test)
-    d = np.ones(len((extended_test)))*100
+    d = np.ones(len((extended_test)))*5
     lad = calculate_charge('homogenous',  triangle_test ,extended_test,d, a[i])
     surface = area(triangle_test)
     b[i] = sum([lad[j]*surface[j] for j in range(len(lad))])
@@ -64,11 +64,12 @@ c = np.zeros(len(a))
 for i in range(len(a)):
     center_test,vertice_test,triangle_test,extended_test = get_triple_points(mesh,a[i])
     triangle_test = get_triangles(vertice_test, triangle_test)
-    d = np.ones(len((extended_test)))*100
-    lad = calculate_charge('point_charge',  triangle_test ,extended_test,d, f'{a[i]}point')
+    d = np.ones(len((extended_test)))*5
+    lad = calculate_charge('point_charge',  center_test ,extended_test,d, f'{a[i]}point')
     c[i] = sum(lad)
        
-
+a = np.delete(a, 9)
+c = np.delete(c,9)
 
 plt.figure()
 plt.xlabel('Offset')

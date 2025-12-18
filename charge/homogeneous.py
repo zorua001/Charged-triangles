@@ -70,7 +70,6 @@ def homogeneous (triange,point):
     d = q/(alpha**2)
     e = abs(np.dot(n,np.transpose(triange[2]-point)))/alpha
     c_prim = c ##Ingen aning vad c_prim 
-    print(a,b,c,d,e)
     return (2*area(triange)/alpha)*(stora_j(a, a_prim, b, b_prim, c, c_prim, d, e, 1)-stora_j(a, a_prim, b, b_prim, c, c_prim, d, e, 0))
 
 def homogeneous_memo (triange,point,j):
