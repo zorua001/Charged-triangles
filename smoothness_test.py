@@ -104,8 +104,9 @@ def run_test(simulation_params, visualization_params):
     bodies = simulation_params['bodies']
     
     '''Circle test'''
+   
     #We decide on some radii and center (these are based on a cylinder radius of 10)
-    radii = [20]
+    radii = [1,1.1,1.2,1.3,3,10,20]
     center = (0,0,0)
     resolution = 1000
     total_points = []
@@ -114,24 +115,8 @@ def run_test(simulation_params, visualization_params):
         total_points.append(points)
         potentials = [calculate_potential_from_point(point) for point in points]
         plot_circle(angles,potentials,radius)
-        
-    print(total_points)    
-    # Convert the list of tuples to a NumPy array
-    
-    points_np = np.array(total_points).astype(np.float32)  # Ensure correct data type
+       
 
-# Create an Open3D tensor from the NumPy array
-    points_tensor = o3d.core.Tensor(points_np)
-
-# Create a point cloud object
-    point_cloud = o3d.t.geometry.PointCloud()
-
-# Set points for the point cloud
-    point_cloud.point["positions"] = points_tensor
-    colors = np.array([[1, 0, 0] for _ in points])  # Red
-    point_cloud.point["colors"] = o3d.core.Tensor(colors)
-    
-    
 
     '''Full triangle test'''
     index = 1
@@ -151,7 +136,7 @@ def run_test(simulation_params, visualization_params):
     #for body in simulation_params['bodies']:
     #    body.calculate_colors(simulation_params['charge_distribution_method'], visualization_params['color_method'])
         
-    o3d.visualization.draw(point_cloud)
+    #o3d.visualization.draw([body for body in bodies])
  
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Run the results of a previous simulation.")
