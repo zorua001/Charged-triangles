@@ -163,11 +163,10 @@ def run_simulation(simulation_params, visualization_params, settings_name):
         #We save the result so that it can be loaded again
     save_data(settings_name,simulation_params)
     
-        
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Run the simulation with adjustable parameters.")
-    parser.add_argument("--settings", type=str, default="settings_default_homo", help="Name of the simulation settings file to use.")
+    parser.add_argument("--settings", type=str, default="hvp_smoothness_h_cylinder_10000", help="Name of the simulation settings file to use.")
     parser.add_argument("--visualization", type=str, default="settings_default", help="Name of the visualization settings file to use.")
     return parser.parse_args()
     
