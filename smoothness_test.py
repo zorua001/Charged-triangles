@@ -117,6 +117,7 @@ def run_test(simulation_params, visualization_params):
         
     print(total_points)    
     # Convert the list of tuples to a NumPy array
+    
     points_np = np.array(total_points).astype(np.float32)  # Ensure correct data type
 
 # Create an Open3D tensor from the NumPy array
