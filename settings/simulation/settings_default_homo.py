@@ -15,7 +15,7 @@ SIMULATION_PARAMS = {
     #Which method for finding field points is used. Options are centroid, triple
     'field_point_method': 'triple',
     #If you have field_point_method 'triple' you need an offset variable which is a float between 0 and 1
-    'offset':float(0.5),
+    'offset':float(4),
     #Which geometric bodies exist in this setup (see file allowed_bodies)
     'bodies': [Body('cylinder', float(5), pos=[0,0,0],rot=[0,0,0], radius=1, height=5,length_resolution=20, height_resolution=20),],
     'point_potential': [Point_potential([0,-0.5,0],float(5),radius=0.5)]
