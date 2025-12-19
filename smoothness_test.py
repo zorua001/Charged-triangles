@@ -335,7 +335,8 @@ def run_test(simulation_params, visualization_params):
     '''
 
     '''Full triangle test'''
-    index = 1
+    #Index of triangle (1,80,160,240,320,400)
+    index = 400
     resolution = 1000
     triangle_vertices = bodies[0].get_triangle_vertices()[index]
     points = generate_evenly_distributed_points(triangle_vertices[0], triangle_vertices[1], triangle_vertices[2], resolution)
@@ -365,7 +366,7 @@ def run_test(simulation_params, visualization_params):
  
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Run the results of a previous simulation.")
-    parser.add_argument("--save", type=str, default = 'hvp_smoothness_p_cylinder_400_1', help="Name of the save file to use. The save files can be found under the saves directory")
+    parser.add_argument("--save", type=str, default = 'hvp_smoothness_h_cylinder_400_1', help="Name of the save file to use. The save files can be found under the saves directory")
     parser.add_argument("--visualization", type=str, default="settings_default", help="Name of the visualization settings file to use.")
     return parser.parse_args()
     

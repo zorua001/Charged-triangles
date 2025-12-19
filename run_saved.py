@@ -29,17 +29,50 @@ def run_simulation(simulation_params, visualization_params):
     #Already done through loading the save
     print(f'Simulation parameters: {simulation_params}')
     
+    charge_distribution_method = simulation_params['charge_distribution_method']
+    bodies = simulation_params['bodies']
+    # Get the areas of the triangles
+    areas = [] 
+    charges = []
+    for body in bodies:
+        s_charges = body.charges
+        s_areas=body.areas_of_triangles()  
+        areas.extend(s_areas)
+        charges.extend(s_charges)
+    
+    
+    #Calculate lowest and highest charge density
+    if(charge_distribution_method in ['point_charge', 'homogenous']):
+        if len(charges) == len(areas):
+            if charge_distribution_method == 'point_charge':
+                print(f'Total charge: {sum(charges)}')
+                charge_density = [charge / area for charge, area in zip(charges, areas)]
+            else:
+                charge = [charge * area for charge, area in zip(charges, areas)]
+                print(f'Total charge: {sum(charge)}')
+                charge_density = charges 
+        else:
+            raise ValueError(f'Both lists must be of the same length. They are now {len(charges)} and {len(areas)}')   
+    
+    min_density = min(charge_density)
+    max_density = max(charge_density)
+    
+    
+    print(f'Minumum charge density:{min_density}')
+    print(f'Maximun charge density: {max_density}')
+    
+    
     #Visualize everything
     #We create the colors in the bodies.
         #We then visualize all the bodies
     for body in simulation_params['bodies']:
-        body.calculate_colors(simulation_params['charge_distribution_method'], visualization_params['color_method'])
+        body.calculate_colors(simulation_params['charge_distribution_method'], visualization_params['color_method'], min_density,max_density)
         
     o3d.visualization.draw([body.mesh for body in  simulation_params['bodies']])
  
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Run the results of a previous simulation.")
-    parser.add_argument("--save", type=str, required=True, help="Name of the save file to use. The save files can be found under the saves directory")
+    parser.add_argument("--save", type=str, default="hvp_smoothness_p_cylinder_400_1", help="Name of the save file to use. The save files can be found under the saves directory")
     parser.add_argument("--visualization", type=str, default="settings_default", help="Name of the visualization settings file to use.")
     return parser.parse_args()
     
