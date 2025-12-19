@@ -50,6 +50,7 @@ for i in range(len(a)):
     d = np.ones(len((extended_test)))*5
     lad = calculate_charge('homogenous',  triangle_test ,extended_test,d, a[i])
     surface = area(triangle_test)
+    ## For 
     b[i] = sum([lad[j]*surface[j] for j in range(len(lad))])
 print(b)
 
