@@ -231,7 +231,7 @@ def rotate_and_translate_to_xy(vertices, points):
     rotation_axis = np.cross(normal, target_normal)
     rotation_angle = np.arccos(np.clip(np.dot(normal, target_normal), -1.0, 1.0))
 
-    # Create the rotation matrix using Rodrigues' rotation formula
+    # Create the rotation matrix
     if np.linalg.norm(rotation_axis) != 0:  # Check if a rotation is needed
         rotation_axis = rotation_axis / np.linalg.norm(rotation_axis)
         K = np.array([[0, -rotation_axis[2], rotation_axis[1]],
@@ -256,22 +256,9 @@ def rotate_and_translate_to_xy(vertices, points):
 
     return translated_vertices, translated_points
 
-def plot_centered_triangle(v1, v2, v3, points, potentials, std_dev,mean,r_squared):
+def plot_centered_triangle(v1, v2, v3, points, potentials, std_dev,mean,r_squared, method, index):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-
-    # Create triangle vertices
-    triangle_vertices = np.array([v1, v2, v3])
-
-    # Calculate centroid
-    centroid = np.mean(triangle_vertices, axis=0)
-
-    # Center the triangle at the origin by translating vertices
-    centered_vertices = triangle_vertices - centroid
-
-    # Create a surface plot for the centered triangle
-    #ax.plot_trisurf(centered_vertices[:, 0], centered_vertices[:, 1], 
-    #                 centered_vertices[:, 2], color='lightgrey', alpha=0.5, antialiased=True)
 
     # Plot points with a color map based on their z-values
     sc = ax.scatter(points[:, 0], points[:, 1], potentials, c=potentials, cmap='viridis', label='Potential')
@@ -288,14 +275,14 @@ def plot_centered_triangle(v1, v2, v3, points, potentials, std_dev,mean,r_square
           horizontalalignment='center', verticalalignment='bottom', 
           transform=ax.transAxes, fontsize=8)
     # Labels and title
-    ax.set_xlabel('X axis')
-    ax.set_ylabel('Y axis')
-    ax.set_zlabel('Potential (Height)')
-    ax.set_title('Centered Triangle with Potential Map')
+    ax.set_xlabel('x-coord')
+    ax.set_ylabel('y-coord')
+    ax.set_zlabel('Potential')
+    ax.set_title(f'Triangle potential map. Triangle index:{index}, {method}')
     ax.legend()
 
     # Add a color bar
-    cbar = plt.colorbar(sc, ax=ax, pad=0.1)
+    cbar = plt.colorbar(sc, ax=ax, pad=0.15)
     cbar.set_label('Potential')
 
     # Maintain aspect ratio and grid
@@ -348,7 +335,7 @@ def run_test(simulation_params, visualization_params):
     '''
 
     '''Full triangle test'''
-    index = 200
+    index = 1
     resolution = 1000
     triangle_vertices = bodies[0].get_triangle_vertices()[index]
     points = generate_evenly_distributed_points(triangle_vertices[0], triangle_vertices[1], triangle_vertices[2], resolution)
@@ -363,7 +350,7 @@ def run_test(simulation_params, visualization_params):
     #rotate triangle to x-y plane:
     rot_vert, rot_points = rotate_and_translate_to_xy(triangle_vertices,points)
     #Plot everything     
-    plot_centered_triangle(rot_vert[0], rot_vert[1], rot_vert[2], rot_points, potentials,std_dev,mean,r_squared)
+    plot_centered_triangle(rot_vert[0], rot_vert[1], rot_vert[2], rot_points, potentials,std_dev,mean,r_squared, method, index)
     
     
     '''Random scatter test'''
