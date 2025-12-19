@@ -9,6 +9,7 @@ from config.allowed_bodies import Body
 from config.point_potential import Point_potential
 
 SIMULATION_PARAMS = {
+    'name': 'hvp_smoothness_p_cylinder_400',
     #Which charge distribution is used. Options are point_charge, homogenous
     'charge_distribution_method': 'point_charge',
     #Which method for finding field points is used. Options are centroid, triple

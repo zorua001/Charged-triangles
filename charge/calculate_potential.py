@@ -6,7 +6,17 @@ Calculates the potential
 
 @author: Hampus Berndt
 """
+import numpy as np
+import charge.homogeneous as hct
 
-##TODO: Do this function
-def calculate_potential_from_point(point):
-    return point[1]
+def calculate_potential(triangles,charges,point,metod):
+    tot_pot = 0
+    if metod == 'homogenous':
+        for i in range(len(triangles)):
+            tot_pot = tot_pot + hct.homogeneous(triangles[i],point)*charges[i]
+    else:
+        for i in range(len(triangles)):
+            tot_pot = tot_pot + charges[i]/np.linalg.norm(triangles[i]-point)
+            
+    return tot_pot
+
