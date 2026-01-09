@@ -204,7 +204,7 @@ def get_color(relative_values, min_value,max_value):
     #We rescale between 0 and 1
     temp_rescaled = (temp - min_value) / (max_value - min_value)
     #We create a color spectrum where lowest value will be green and highest red
-    color = np.array([[0.5+0.5*i,0.5-0.5*i,0] for i in temp_rescaled])
+    color = np.array([[i,1-i,0] for i in temp_rescaled])
     return color
     
 

@@ -24,5 +24,5 @@ SIMULATION_PARAMS = {
         Body('box', float(5) ,pos = [0,0,0],rot =[0,0,0], height=3 , width = 3, depth = 3, iterations = 4 ),
         Body('cylinder', float(5), pos=[2.75,.25,-2.5],rot=[0,0,0], radius=0.25, height=5,length_resolution=20, height_resolution=20)
         ]),
-    'point_potential':  [Point_potential([0,.5,.5],float(5),radius=0.25)]
+    'point_potential':  [Point_potential([0,.5,.5],float(5),radius=1)]
 }

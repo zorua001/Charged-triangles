@@ -110,10 +110,7 @@ def run_simulation(simulation_params, visualization_params, settings_name):
     name = simulation_params['name']
     charges = calculate_charge(charge_distribution_method, charge_information, field_points, field_point_potentials,name)
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 0143d6dfab5f47b3f1143e18350386e7b241413c
     i = 0
     for body in bodies:
         body.charges = charges[i:i+len(body.get_triangles())]
@@ -152,12 +149,7 @@ def run_simulation(simulation_params, visualization_params, settings_name):
     print(f'Minumum charge density:{min_density}')
     print(f'Maximun charge density: {max_density}')
     
-<<<<<<< HEAD
-    
-    
-    
-=======
->>>>>>> 0143d6dfab5f47b3f1143e18350386e7b241413c
+
     for body in bodies:
         body.calculate_colors(charge_distribution_method, visualization_params['color_method'], min_density,max_density)
     

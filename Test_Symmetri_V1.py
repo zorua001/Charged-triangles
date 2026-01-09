@@ -62,8 +62,8 @@ def symmetri(mesh,decision,name):
     else:
         lad = calculate_charge('point_charge',  center ,field_points,d, f'test_{name}_punkt')
         
-    vinkel = np.linspace(0, 2*np.pi,50)
-    r = 1
+    vinkel = np.linspace(0, 2*np.pi,500)
+    r = 1.1
     jämförelse = np.zeros(len(vinkel))
     if decision:
         for i in range(len(vinkel)):
@@ -84,11 +84,12 @@ def symmetri(mesh,decision,name):
     
 
 
-#mesh = o3d.t.geometry.TriangleMesh.create_sphere(2,10)
-#symmetri(mesh,1,'sfär')
 
-mesh_2 = o3d.t.geometry.TriangleMesh.create_cylinder(1,5,50,50)
-symmetri(mesh_2,0,'cylinder_50')
+mesh = o3d.t.geometry.TriangleMesh.create_cylinder(1,5,10,10)
+symmetri(mesh,1,'cylinder')
+
+mesh_2 = o3d.t.geometry.TriangleMesh.create_cylinder(1,5,10,10)
+symmetri(mesh_2,0,'cylinder')
 
 
 

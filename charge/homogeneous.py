@@ -19,7 +19,7 @@ def stora_p (a,b,c,d,e,n):
     k = abs((b**2+d**2)*n+a*b+c*d+np.sqrt(((b**2+d**2)*n+a*b+c*d)**2+(a*d-b*c)**2+e**2*(b**2+d**2)))
     if k <= 0 :
         print('hej')
-        return 10^18
+        return 0
     
     return 2*np.log(abs((b**2+d**2)*n+a*b+c*d+np.sqrt(((b**2+d**2)*n+a*b+c*d)**2+(a*d-b*c)**2+e**2*(b**2+d**2))))
 

@@ -30,10 +30,11 @@ def homogen (center,triangle,vertice):
 def point_ch(centroid,extended,triangle,decision):
     surface = area_tri(triangle)
     if decision:
-        k = ch.charge(centroid, extended, -5)
+        k = ch.charge(centroid, extended, 5)
     else:
         k = ch.charge(centroid,centroid,-5)
     chai = k
+    print(sum(chai))
     for i in range(len(k)):
         if k[i] >= 0: 
             k[i] =  np.log(k[i]/surface[i])
@@ -47,7 +48,8 @@ def point_ch(centroid,extended,triangle,decision):
 def homogeneous_ch(centroid,triangles,name):
     k = hct.charge_2(triangles, centroid, 5,name)
     chai = k
-   
+    arean = area_tri(triangles)
+    print(sum([chai[i]*arean[i] for i in range(len(chai))]))
     for i in range(len(k)):
         if k[i] >= 0: 
             k[i] =  np.log(k[i])
@@ -70,14 +72,12 @@ def centroid(mesh,w):
         extended[3*i] = [(w*h[0][j]+h[1][j]+h[2][j])/(2+w) for j in range (3)]
         extended[3*i+1] = [(h[0][j]+w*h[1][j]+h[2][j])/(2+w) for j in range (3)]
         extended[3*i+2] = [(h[0][j]+h[1][j]+w*h[2][j])/(2+w) for j in range (3)]
-    print(len(extended))
     return centroid,vertice,triangle,extended
 
 def area(vertice,triangle):
     surface = np.zeros(len(triangle))
     for i in range (len(triangle)):
         surface[i] = np.linalg.norm(np.cross(vertice[int(triangle[i][1])]-vertice[int(triangle[i][0])],vertice[int(triangle[i][2])]-vertice[int(triangle[i][0])]))/2
-    print(len(surface))
     return surface
 
 def area_tri(triangle):
@@ -125,7 +125,7 @@ def charge_difference(charges,laddningar):
 
 ##Kanske ändra till o3d.t 
 mesh = o3d.geometry.TriangleMesh.create_box(3,3,3)
-mesh = mesh.subdivide_midpoint(number_of_iterations= 4)
+mesh = mesh.subdivide_midpoint(number_of_iterations= 3)
 mesh = o3d.t.geometry.TriangleMesh.from_legacy(mesh)
 
 
@@ -133,46 +133,30 @@ mesh = o3d.t.geometry.TriangleMesh.from_legacy(mesh)
 
 #print(mesh.vertex["positions"].numpy())
 
-mesh2 = o3d.t.geometry.TriangleMesh.create_cylinder(.25,5,10,20)
-mesh3 = mesh2.translate(o3d.core.Tensor([.25,.25,-1.5]))
-
-mesh4 = o3d.t.geometry.TriangleMesh.create_cylinder(.25,5,10,20)
-mesh5 = mesh4.translate(o3d.core.Tensor([2.75,.25,-1.5]))
-w= 0.5
+w= 5
 center,vertice,triangle,extended = centroid(mesh,w)
 
-center_2,vertice_2,triangle_2,extended_2 = centroid(mesh2,w)
-print(len(center_2))
-center_3,vertice_3,triangle_3,extended_3 = centroid(mesh5,w)
-tot = np.concatenate((center,center_2,center_3))
+#center_2,vertice_2,triangle_2,extended_2 = centroid(mesh2,w)
+#print(len(center_2))
+#center_3,vertice_3,triangle_3,extended_3 = centroid(mesh5,w)
+#tot = np.concatenate((center,center_2,center_3))
 triangles = get_triangles(vertice, triangle)
-triangles_2 = get_triangles(vertice_2, triangle_2)
-triangles_3 = get_triangles(vertice_3,triangle_3)
-tot_a = np.concatenate((triangles,triangles_2,triangles_3))
-tot_c = np.concatenate((extended,extended_2,extended_3))
-print(len(tot_a))
+#triangles_2 = get_triangles(vertice_2, triangle_2)
+#triangles_3 = get_triangles(vertice_3,triangle_3)
+#tot_a = np.concatenate((triangles,triangles_2,triangles_3))
+#tot_c = np.concatenate((extended,extended_2,extended_3))
+#print(len(tot_a))
 
 #Ändra från true eller false om man ska använda fler punkter eller inte
 decision = 1
 
 
 t = time.time()
-#färg = point_ch(tot,tot_c,tot_a,decision)
-#färg, chai = homogeneous_ch(tot_a, tot_a,'box_cylinder_cylinder_homo_centroid')
-
+färg,chai = point_ch(center,extended,triangles,decision)
+#färg, chai = homogeneous_ch(extended, triangles,'box_charge_2')
 #färg_2 = homogeneous_ch(tot,tot_a)
 s = time.time()
 print(s-t)
-punkter = np.array([[3,6,7],[-5,0,0]])
-a = np.linspace(0.1,5,50)
-mesh_test = o3d.t.geometry.TriangleMesh.create_cylinder(1,1,5,10)
-b = np.zeros(len(a))
-for i in range(len(a)):
-    center_test,vertice_test,triangle_test,extended_test = centroid(mesh_test,a[i])
-    triangle_test = get_triangles(vertice_test, triangle_test)
-    col,lad = homogeneous_ch(extended_test, triangle_test, a[i])
-    b[i] = sum(lad)
-print(b)
 #c = np.zeros(len(a))
 #for i in range(len(a)):
     #center_test,vertice_test,triangle_test,extended_test = centroid(mesh_test,a[i])
